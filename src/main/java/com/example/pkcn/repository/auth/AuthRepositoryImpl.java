@@ -1,6 +1,7 @@
 package com.example.pkcn.repository.auth;
 
 import com.example.pkcn.common.HashMD5Utils;
+import com.example.pkcn.common.UserStatus;
 import com.example.pkcn.dto.request.UserRegisterDTO;
 import com.example.pkcn.entity.User;
 import jakarta.persistence.EntityManager;
@@ -31,6 +32,7 @@ public class AuthRepositoryImpl implements IAuthRepository{
         userE.setTypeAccount(user.getTypeAccount());
         userE.setEmail(user.getEmail());
         userE.setPassword(HashMD5Utils.hashText(user.getPassword()));
+        userE.setUserStatus(UserStatus.VERIFY_MAIL.getStatus());
 
         em.persist(userE);
 
