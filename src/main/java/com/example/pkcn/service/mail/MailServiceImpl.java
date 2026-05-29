@@ -44,7 +44,7 @@ public class MailServiceImpl implements IMailService {
                                 Kích Hoạt Tài Khoản
                             </a>
                         </div>
-                        <p style="color: #999; font-size: 13px; text-align: center;">
+                        <p style="color: #999; font-size: 7px; text-align: center;">
                             Nếu nút bấm trên không hoạt động, bạn có thể copy link này vào trình duyệt (hoặc ghi chú): <br/>
                             <span style="color: #0066cc;">%s</span>
                         </p>

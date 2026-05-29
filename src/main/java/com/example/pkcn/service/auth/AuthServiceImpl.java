@@ -1,6 +1,8 @@
 package com.example.pkcn.service.auth;
 
 import com.example.pkcn.controller.advice.cus_exception.EmailAlreadyExistsException;
+import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
+import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
 import com.example.pkcn.dto.request.UserRegisterDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
 import com.example.pkcn.repository.auth.IAuthRepository;
@@ -44,4 +46,28 @@ public class AuthServiceImpl implements IAuthService {
                 false
         );
     }
+
+    @Override
+    public SuccessBasicDTO verifyMail(String mail) throws EmailAlreadyExistsException, IllegalUserStatusException, UserNotExistException {
+        if ((mail == null || mail.isEmpty()))
+            throw new IllegalArgumentException("Dữ liệu không hợp lệ");
+
+        boolean isUserExist = authRepository.checkUserExistByMail(mail);
+        if (!isUserExist)
+            throw new EmailAlreadyExistsException("Email này chưa tồn tại");
+
+        boolean res = authRepository.verifyMail(mail);
+        if(res)
+            return new SuccessBasicDTO(
+                    "Xác thực thành công",
+                    true
+            );
+        else
+            return new SuccessBasicDTO(
+                    "Xác thực thất bại",
+                    false
+            );
+    }
+
+
 }

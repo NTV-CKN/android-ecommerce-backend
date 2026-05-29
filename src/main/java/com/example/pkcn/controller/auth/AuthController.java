@@ -1,13 +1,13 @@
 package com.example.pkcn.controller.auth;
 
+import com.example.pkcn.controller.advice.cus_exception.EmailAlreadyExistsException;
+import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
+import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
 import com.example.pkcn.dto.request.UserRegisterDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
 import com.example.pkcn.service.auth.IAuthService;
 import com.example.pkcn.service.mail.IMailService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/v1/auth")
 @RestController
@@ -23,7 +23,14 @@ public class AuthController {
     @PostMapping("/register")
     public SuccessBasicDTO register(@RequestBody UserRegisterDTO user) throws Exception {
         SuccessBasicDTO dto = authService.register(user);
-        mailService.sendVerificationEmail(user.getEmail(), "");
+
+        String deepLink = "myapp://auth/verify-mail?email="+user.getEmail();
+        mailService.sendVerificationEmail(user.getEmail(), deepLink);
         return dto;
+    }
+
+    @GetMapping("/verify-mail")
+    public SuccessBasicDTO verifyMail(@RequestParam("email") String mail) throws IllegalUserStatusException, EmailAlreadyExistsException, UserNotExistException {
+        return authService.verifyMail(mail);
     }
 }
