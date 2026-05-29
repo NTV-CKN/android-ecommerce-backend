@@ -56,6 +56,14 @@ public class User {
         return typeAccount;
     }
 
+    public String getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(String userStatus) {
+        this.userStatus = userStatus;
+    }
+
     public void setTypeAccount(String typeAccount) {
         this.typeAccount = typeAccount;
     }
