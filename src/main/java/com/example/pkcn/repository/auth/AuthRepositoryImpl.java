@@ -2,6 +2,8 @@ package com.example.pkcn.repository.auth;
 
 import com.example.pkcn.common.HashMD5Utils;
 import com.example.pkcn.common.UserStatus;
+import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
+import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
 import com.example.pkcn.dto.request.UserRegisterDTO;
 import com.example.pkcn.entity.User;
 import jakarta.persistence.EntityManager;
@@ -48,5 +50,21 @@ public class AuthRepositoryImpl implements IAuthRepository{
         User user = results.isEmpty() ? null : results.getFirst();
 
         return user != null;
+    }
+
+    @Override
+    public boolean verifyMail(String email) throws UserNotExistException, IllegalUserStatusException {
+        String sql = "SELECT u FROM User u WHERE u.email = :email";
+        TypedQuery<User> query = em.createQuery(sql, User.class);
+        query.setParameter("email", email);
+
+        User user = query.getSingleResultOrNull();
+        if(user == null) throw new UserNotExistException("Người dùng không tồn tại");
+        if(!user.getUserStatus().equalsIgnoreCase(UserStatus.VERIFY_MAIL.getStatus()))
+            throw new IllegalUserStatusException("Trạng thái người dùng khác xác thực mail");
+
+        user.setUserStatus(UserStatus.ACTIVE.getStatus());
+
+        return true;
     }
 }
