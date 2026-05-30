@@ -2,9 +2,11 @@ package com.example.pkcn.repository.auth;
 
 import com.example.pkcn.common.HashMD5Utils;
 import com.example.pkcn.common.UserStatus;
+import com.example.pkcn.controller.advice.cus_exception.DataStillValidException;
 import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
 import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
 import com.example.pkcn.dto.request.UserRegisterDTO;
+import com.example.pkcn.entity.PasswordReset;
 import com.example.pkcn.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -12,11 +14,13 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Repository("auth_repository_1")
 @Transactional
-public class AuthRepositoryImpl implements IAuthRepository{
+public class AuthRepositoryImpl implements IAuthRepository {
     private EntityManager em;
 
     @Autowired
@@ -26,8 +30,8 @@ public class AuthRepositoryImpl implements IAuthRepository{
 
     @Override
     public boolean register(UserRegisterDTO user) throws Exception {
-        if((user.getEmail() == null || user.getEmail().isEmpty())
-        || (user.getPassword() == null || user.getPassword().isEmpty()))
+        if ((user.getEmail() == null || user.getEmail().isEmpty())
+                || (user.getPassword() == null || user.getPassword().isEmpty()))
             return false;
 
         User userE = new User();
@@ -48,7 +52,6 @@ public class AuthRepositoryImpl implements IAuthRepository{
         query.setParameter("email", email);
         List<User> results = query.getResultList();
         User user = results.isEmpty() ? null : results.getFirst();
-
         return user != null;
     }
 
@@ -59,12 +62,37 @@ public class AuthRepositoryImpl implements IAuthRepository{
         query.setParameter("email", email);
 
         User user = query.getSingleResultOrNull();
-        if(user == null) throw new UserNotExistException("Người dùng không tồn tại");
-        if(!user.getUserStatus().equalsIgnoreCase(UserStatus.VERIFY_MAIL.getStatus()))
+        if (user == null) throw new UserNotExistException("Người dùng không tồn tại");
+        if (!user.getUserStatus().equalsIgnoreCase(UserStatus.VERIFY_MAIL.getStatus()))
             throw new IllegalUserStatusException("Trạng thái người dùng khác xác thực mail");
 
         user.setUserStatus(UserStatus.ACTIVE.getStatus());
 
         return true;
+    }
+
+    @Override
+    public String createTokenResetPassword(String email) throws DataStillValidException {
+        PasswordReset passwordReset = em.find(PasswordReset.class, email);
+        if (passwordReset != null) {
+            if (passwordReset.getValid() && passwordReset.getExpireTime().isAfter(LocalDateTime.now()))
+                throw new DataStillValidException(
+                        "Token reset mật khẩu của email này vẫn còn hiệu lực"
+                );
+            em.remove(passwordReset);
+        }
+
+        LocalDateTime current = LocalDateTime.now();
+        LocalDateTime currentPlus10min = current.plusMinutes(10);
+
+        String token =UUID.randomUUID().toString();
+        PasswordReset passwordResetNew = new PasswordReset(
+                email,
+                token,
+                currentPlus10min
+        );
+
+        em.persist(passwordResetNew);
+        return token;
     }
 }

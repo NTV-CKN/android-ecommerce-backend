@@ -1,5 +1,6 @@
 package com.example.pkcn.controller.advice;
 
+import com.example.pkcn.controller.advice.cus_exception.DataStillValidException;
 import com.example.pkcn.controller.advice.cus_exception.EmailAlreadyExistsException;
 import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
 import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
@@ -24,6 +25,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalUserStatusException.class)
     public ResponseEntity<ExceptionResponseDTO> handleIllegalUserStatus(IllegalUserStatusException ex) {
+        ExceptionResponseDTO error = new ExceptionResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD REQUEST",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataStillValidException.class)
+    public ResponseEntity<ExceptionResponseDTO> handleDataNotInvalidation(DataStillValidException ex) {
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "BAD REQUEST",
