@@ -4,6 +4,7 @@ import com.example.pkcn.controller.advice.cus_exception.DataStillValidException;
 import com.example.pkcn.controller.advice.cus_exception.EmailAlreadyExistsException;
 import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
 import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
+import com.example.pkcn.dto.request.ResetPasswordDTO;
 import com.example.pkcn.dto.request.UserRegisterDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
 import com.example.pkcn.service.auth.IAuthService;
@@ -31,6 +32,11 @@ public class AuthController {
         String deepLink = "myapp://auth/verify-mail?email=" + user.getEmail();
         mailService.sendVerificationEmail(user.getEmail(), deepLink);
         return dto;
+    }
+
+    @PostMapping("reset-password")
+    public SuccessBasicDTO resetPassword(@RequestBody ResetPasswordDTO resetPassword) throws Exception {
+        return authService.resetPassword(resetPassword);
     }
 
     @GetMapping("/verify-email")

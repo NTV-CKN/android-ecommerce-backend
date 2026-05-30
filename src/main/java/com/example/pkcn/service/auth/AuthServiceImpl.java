@@ -4,6 +4,7 @@ import com.example.pkcn.controller.advice.cus_exception.DataStillValidException;
 import com.example.pkcn.controller.advice.cus_exception.EmailAlreadyExistsException;
 import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
 import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
+import com.example.pkcn.dto.request.ResetPasswordDTO;
 import com.example.pkcn.dto.request.UserRegisterDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
 import com.example.pkcn.repository.auth.IAuthRepository;
@@ -77,5 +78,17 @@ public class AuthServiceImpl implements IAuthService {
             throw new UserNotExistException("Không tồn tại người dùng nào có email này");
 
         return authRepository.createTokenResetPassword(mail);
+    }
+
+    @Override
+    public SuccessBasicDTO resetPassword(ResetPasswordDTO resetPasswordDTO) throws Exception {
+        boolean res = authRepository.resetPassword(resetPasswordDTO);
+        if(!res)
+            throw new Exception("Khôi phục mật khẩu thất bại");
+
+        return new SuccessBasicDTO(
+                "Khôi phục mật khẩu thành công",
+                true
+        );
     }
 }

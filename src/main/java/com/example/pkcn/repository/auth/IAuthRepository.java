@@ -1,8 +1,10 @@
 package com.example.pkcn.repository.auth;
 
+import com.example.pkcn.controller.advice.cus_exception.DataInvalidException;
 import com.example.pkcn.controller.advice.cus_exception.DataStillValidException;
 import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
 import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
+import com.example.pkcn.dto.request.ResetPasswordDTO;
 import com.example.pkcn.dto.request.UserRegisterDTO;
 
 public interface IAuthRepository {
@@ -13,4 +15,6 @@ public interface IAuthRepository {
     boolean verifyMail(String email) throws UserNotExistException, IllegalUserStatusException;
 
     String createTokenResetPassword(String email) throws DataStillValidException;
+
+    boolean resetPassword(ResetPasswordDTO resetPasswordDTO) throws Exception;
 }

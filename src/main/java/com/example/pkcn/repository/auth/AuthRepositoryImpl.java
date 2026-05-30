@@ -1,10 +1,10 @@
 package com.example.pkcn.repository.auth;
 
+import com.example.pkcn.common.AppUtils;
 import com.example.pkcn.common.HashMD5Utils;
 import com.example.pkcn.common.UserStatus;
-import com.example.pkcn.controller.advice.cus_exception.DataStillValidException;
-import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
-import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
+import com.example.pkcn.controller.advice.cus_exception.*;
+import com.example.pkcn.dto.request.ResetPasswordDTO;
 import com.example.pkcn.dto.request.UserRegisterDTO;
 import com.example.pkcn.entity.PasswordReset;
 import com.example.pkcn.entity.User;
@@ -33,6 +33,18 @@ public class AuthRepositoryImpl implements IAuthRepository {
         if ((user.getEmail() == null || user.getEmail().isEmpty())
                 || (user.getPassword() == null || user.getPassword().isEmpty()))
             return false;
+
+
+        if (!AppUtils.isStrongPassword(user.getPassword()))
+            throw new IllegalFormatDataException(
+                    "Mật khẩu yêu cầu lớn hơn 8 kí tự, có ít nhất 1 kí tự hoa, thường, số và kí tự đặc biệt"
+            );
+
+        if (!AppUtils.isFormatEmail(user.getEmail()))
+            throw new IllegalFormatDataException(
+                    "Email không đúng định dạng"
+            );
+
 
         User userE = new User();
         userE.setTypeAccount(user.getTypeAccount());
@@ -85,7 +97,7 @@ public class AuthRepositoryImpl implements IAuthRepository {
         LocalDateTime current = LocalDateTime.now();
         LocalDateTime currentPlus10min = current.plusMinutes(10);
 
-        String token =UUID.randomUUID().toString();
+        String token = UUID.randomUUID().toString();
         PasswordReset passwordResetNew = new PasswordReset(
                 email,
                 token,
@@ -94,5 +106,42 @@ public class AuthRepositoryImpl implements IAuthRepository {
 
         em.persist(passwordResetNew);
         return token;
+    }
+
+    @Override
+    public boolean resetPassword(ResetPasswordDTO resetPasswordDTO) throws Exception {
+        PasswordReset passwordReset = em.find(PasswordReset.class, resetPasswordDTO.getEmail());
+        if (passwordReset == null)
+            throw new UserNotExistException(
+                    "Không tìm thấy người dùng có email này trong bảng khôi phục mật khẩu"
+            );
+        if (!passwordReset.getToken().equals(resetPasswordDTO.getToken()))
+            throw new IllegalArgumentException("Token khôi phục mật khẩu không khớp");
+
+        if (passwordReset.getValid() && LocalDateTime.now().isAfter(passwordReset.getExpireTime()))
+            throw new DataInvalidException(
+                    "Token này đã hết hạn, vui lòng gửi lại yêu cầu thiết lập mật khẩu mới"
+            );
+
+        if (!AppUtils.isStrongPassword(resetPasswordDTO.getPassword()))
+            throw new IllegalFormatDataException(
+                    "Mật khẩu yêu cầu lớn hơn 8 kí tự, có ít nhất 1 kí tự hoa, thường, số và kí tự đặc biệt"
+            );
+
+        String hashPassword = HashMD5Utils.hashText(resetPasswordDTO.getPassword());
+        String sql = """
+                UPDATE User u
+                SET u.password = :hashPassword
+                WHERE u.email = :email
+                """;
+        boolean res = em.createQuery(sql)
+                .setParameter("email", resetPasswordDTO.getEmail())
+                .setParameter("hashPassword", hashPassword)
+                .executeUpdate() > 0;
+        if (!res) throw new Exception("Không thể khôi phục mật khẩu");
+
+        em.remove(passwordReset);
+
+        return true;
     }
 }

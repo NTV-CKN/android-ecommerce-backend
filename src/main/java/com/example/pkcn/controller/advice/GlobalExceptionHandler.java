@@ -1,9 +1,6 @@
 package com.example.pkcn.controller.advice;
 
-import com.example.pkcn.controller.advice.cus_exception.DataStillValidException;
-import com.example.pkcn.controller.advice.cus_exception.EmailAlreadyExistsException;
-import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
-import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
+import com.example.pkcn.controller.advice.cus_exception.*;
 import com.example.pkcn.dto.response.ExceptionResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +22,26 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalUserStatusException.class)
     public ResponseEntity<ExceptionResponseDTO> handleIllegalUserStatus(IllegalUserStatusException ex) {
+        ExceptionResponseDTO error = new ExceptionResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD REQUEST",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalFormatDataException.class)
+    public ResponseEntity<ExceptionResponseDTO> handleIllegalFormatData(IllegalFormatDataException ex) {
+        ExceptionResponseDTO error = new ExceptionResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD REQUEST",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataInvalidException.class)
+    public ResponseEntity<ExceptionResponseDTO> handleDataInvalid(DataInvalidException ex) {
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "BAD REQUEST",
