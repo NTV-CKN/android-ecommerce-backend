@@ -72,18 +72,23 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
-    public String createTokenResetPassword(String mail) throws UserNotExistException, DataStillValidException {
-        boolean res = authRepository.checkUserExistByMail(mail);
-        if (!res)
-            throw new UserNotExistException("Không tồn tại người dùng nào có email này");
+    public String createTokenResetPassword(String mail) throws UserNotExistException, DataStillValidException, IllegalUserStatusException {
+        boolean isUserExistAndActive = authRepository.checkUserExistAndActiveByEmail(mail);
+
+        if (!isUserExistAndActive)
+            throw new UserNotExistException("Không tồn tại người dùng nào có email này hoặc trạng thái không hợp lệ");
 
         return authRepository.createTokenResetPassword(mail);
     }
 
     @Override
     public SuccessBasicDTO resetPassword(ResetPasswordDTO resetPasswordDTO) throws Exception {
+        boolean isUserExistAndActive = authRepository.checkUserExistAndActiveByEmail(resetPasswordDTO.getEmail());
+        if (!isUserExistAndActive)
+            throw new UserNotExistException("Không tồn tại người dùng nào có email này hoặc trạng thái không hợp lệ");
+
         boolean res = authRepository.resetPassword(resetPasswordDTO);
-        if(!res)
+        if (!res)
             throw new Exception("Khôi phục mật khẩu thất bại");
 
         return new SuccessBasicDTO(

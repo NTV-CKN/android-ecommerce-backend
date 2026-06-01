@@ -84,7 +84,7 @@ public class AuthRepositoryImpl implements IAuthRepository {
     }
 
     @Override
-    public String createTokenResetPassword(String email) throws DataStillValidException {
+    public String createTokenResetPassword(String email) throws DataStillValidException, UserNotExistException, IllegalUserStatusException {
         PasswordReset passwordReset = em.find(PasswordReset.class, email);
         if (passwordReset != null) {
             if (passwordReset.getValid() && passwordReset.getExpireTime().isAfter(LocalDateTime.now()))
@@ -141,6 +141,21 @@ public class AuthRepositoryImpl implements IAuthRepository {
         if (!res) throw new Exception("Không thể khôi phục mật khẩu");
 
         em.remove(passwordReset);
+
+        return true;
+    }
+
+    @Override
+    public boolean checkUserExistAndActiveByEmail(String email) throws IllegalUserStatusException, UserNotExistException {
+        String sqlFindUserByEmail = "SELECT u FROM User u WHERE u.email = :email";
+        TypedQuery<User> query = em.createQuery(sqlFindUserByEmail, User.class);
+        query.setParameter("email", email);
+        User user = query.getSingleResultOrNull();
+        if(user == null)
+            throw new UserNotExistException("Người dùng không tồn tại");
+
+        if(!user.getUserStatus().equals(UserStatus.ACTIVE.getStatus()))
+            throw new IllegalUserStatusException("Tài khoản không ở trạng thái hoạt động");
 
         return true;
     }

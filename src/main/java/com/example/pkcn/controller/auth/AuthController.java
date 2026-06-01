@@ -50,7 +50,7 @@ public class AuthController {
         if (token == null)
             throw new Exception("Không thể tạo token");
 
-        String deepLink = "myapp://auth/reset-password?token=" + token;
+        String deepLink = "myapp://auth/reset-password?token=" + token + "&email=" + email;
         mailService.sendResetPasswordEmail(email, deepLink);
 
         return new SuccessBasicDTO(
