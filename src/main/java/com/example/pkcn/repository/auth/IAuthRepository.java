@@ -14,7 +14,9 @@ public interface IAuthRepository {
 
     boolean verifyMail(String email) throws UserNotExistException, IllegalUserStatusException;
 
-    String createTokenResetPassword(String email) throws DataStillValidException;
+    String createTokenResetPassword(String email) throws DataStillValidException, UserNotExistException, IllegalUserStatusException;
 
     boolean resetPassword(ResetPasswordDTO resetPasswordDTO) throws Exception;
+
+    boolean checkUserExistAndActiveByEmail(String email) throws IllegalUserStatusException, UserNotExistException;
 }

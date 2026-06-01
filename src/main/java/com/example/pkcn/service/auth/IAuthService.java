@@ -11,6 +11,6 @@ import com.example.pkcn.dto.response.SuccessBasicDTO;
 public interface IAuthService {
     SuccessBasicDTO register(UserRegisterDTO user) throws Exception;
     SuccessBasicDTO verifyMail(String mail) throws EmailAlreadyExistsException, IllegalUserStatusException, UserNotExistException;
-    String createTokenResetPassword(String mail) throws UserNotExistException, DataStillValidException;
+    String createTokenResetPassword(String mail) throws UserNotExistException, DataStillValidException, IllegalUserStatusException;
     SuccessBasicDTO resetPassword(ResetPasswordDTO resetPasswordDTO) throws Exception;
 }
