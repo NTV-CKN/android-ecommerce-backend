@@ -10,6 +10,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity<ExceptionResponseDTO> handleEmailExist(DataNotFoundException ex) {
+        ExceptionResponseDTO error = new ExceptionResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD REQUEST",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponseDTO> handleEmailExist(EmailAlreadyExistsException ex) {
         ExceptionResponseDTO error = new ExceptionResponseDTO(
