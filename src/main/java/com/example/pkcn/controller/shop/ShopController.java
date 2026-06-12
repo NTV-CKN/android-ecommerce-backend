@@ -1,4 +1,4 @@
-package com.example.pkcn.controller.auth;
+package com.example.pkcn.controller.shop;
 
 import com.example.pkcn.controller.advice.cus_exception.DataNotFoundException;
 import com.example.pkcn.dto.response.ShopInfoDTO;
