@@ -97,6 +97,7 @@ public class GlobalExceptionHandler {
                 "INTERNAL SERVER ERROR",
                 "Hệ thống gặp sự cố, vui lòng thử lại sau!"
         );
+        System.out.println(ex.getCause());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

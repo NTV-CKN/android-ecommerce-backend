@@ -17,6 +17,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/*", "/").permitAll()
                         .requestMatchers("/api/v1/shop/*", "/").permitAll()
+                        .requestMatchers("/api/v1/user-manage-address/*", "/").permitAll()
                         .anyRequest().authenticated()
                 );
 

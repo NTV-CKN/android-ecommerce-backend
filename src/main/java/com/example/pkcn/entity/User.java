@@ -2,6 +2,8 @@ package com.example.pkcn.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -14,6 +16,9 @@ public class User {
     )
     @JoinColumn(name = "role_id")
     private Role role;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<UserAddress> userAddresses;
 
     @Column(name = "type_account")
     private String typeAccount;

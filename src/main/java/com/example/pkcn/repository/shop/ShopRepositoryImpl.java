@@ -3,6 +3,7 @@ package com.example.pkcn.repository.shop;
 import com.example.pkcn.entity.Shop;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Primary
+@Transactional
 public class ShopRepositoryImpl implements IShopRepository {
     private final EntityManager em;
 
