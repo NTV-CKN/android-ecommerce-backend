@@ -7,6 +7,8 @@ public class ShipFeeByAddressDTO {
     private String provinceCity;
     private String type;
     private Double price;
+    private Double latitude;
+    private Double longitude;
 
     public void initData(ShipFeeByAddress shipFeeByAddress) {
         if (shipFeeByAddress != null) {
@@ -14,6 +16,8 @@ public class ShipFeeByAddressDTO {
             this.provinceCity = shipFeeByAddress.getProvinceCity();
             this.type = shipFeeByAddress.getType();
             this.price = shipFeeByAddress.getPrice();
+            this.longitude = shipFeeByAddress.getLongitude();
+            this.latitude = shipFeeByAddress.getLatitude();
         }
     }
 
@@ -31,5 +35,13 @@ public class ShipFeeByAddressDTO {
 
     public Double getPrice() {
         return price;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
     }
 }
