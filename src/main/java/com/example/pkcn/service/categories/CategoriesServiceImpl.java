@@ -14,7 +14,9 @@ public class CategoriesServiceImpl implements ICategoriesService {
     @Autowired
     CategoriesRepository categoriesRepository;
 
-    public CategoriesServiceImpl(CategoriesRepository categoriesRepository) {this.categoriesRepository = categoriesRepository;}
+    public CategoriesServiceImpl(CategoriesRepository categoriesRepository) {
+        this.categoriesRepository = categoriesRepository;
+    }
 
     @Override
     public List<CategoriesDTO> getParentCategories() {

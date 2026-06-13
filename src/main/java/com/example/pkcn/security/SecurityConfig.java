@@ -20,6 +20,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/product/feature").permitAll()
                         .requestMatchers("/api/v1/shop/*", "/").permitAll()
                         .requestMatchers("/api/v1/user-manage-address/*", "/").permitAll()
+                        .requestMatchers("/api/v1/ship-fee-address/*", "/").permitAll()
                         .anyRequest().authenticated()
 
                 );

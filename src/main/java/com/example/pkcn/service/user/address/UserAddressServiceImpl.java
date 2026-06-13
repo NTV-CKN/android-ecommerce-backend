@@ -1,9 +1,8 @@
 package com.example.pkcn.service.user.address;
 
-import com.example.pkcn.dto.response.user_manage.UserAddressDTO;
+import com.example.pkcn.dto.response.user_manage.address.UserAddressDTO;
 import com.example.pkcn.entity.UserAddress;
 import com.example.pkcn.repository.user.address.IUserAddressRepository;
-import com.example.pkcn.repository.user.address.UserAddressRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
