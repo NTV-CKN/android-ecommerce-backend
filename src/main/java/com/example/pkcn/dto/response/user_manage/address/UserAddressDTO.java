@@ -1,12 +1,14 @@
-package com.example.pkcn.dto.response.user_manage;
+package com.example.pkcn.dto.response.user_manage.address;
 
 import com.example.pkcn.entity.UserAddress;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserAddressDTO {
     private Integer id;
     private String phoneNumber;
     private String addressDetail;
     private String provinceCity;
+    @JsonProperty("isDefault")
     private Boolean isDefault;
     private String receiverName;
 
@@ -50,10 +52,6 @@ public class UserAddressDTO {
 
     public String getProvinceCity() {
         return provinceCity;
-    }
-
-    public Boolean getDefault() {
-        return isDefault;
     }
 
     public String getReceiverName() {
