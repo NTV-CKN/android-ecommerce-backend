@@ -2,8 +2,9 @@ package com.example.pkcn.service.categories;
 
 import com.example.pkcn.dto.response.CategoriesDTO;
 import com.example.pkcn.entity.Categories;
-import com.example.pkcn.repository.categories.CategoriesRepository;
+import com.example.pkcn.repository.categories.ICategoriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,10 +12,10 @@ import java.util.List;
 @Service
 public class CategoriesServiceImpl implements ICategoriesService {
 
-    @Autowired
-    CategoriesRepository categoriesRepository;
+    private final ICategoriesRepository categoriesRepository;
 
-    public CategoriesServiceImpl(CategoriesRepository categoriesRepository) {
+    @Autowired
+    public CategoriesServiceImpl(ICategoriesRepository categoriesRepository) {
         this.categoriesRepository = categoriesRepository;
     }
 
@@ -22,10 +23,10 @@ public class CategoriesServiceImpl implements ICategoriesService {
     public List<CategoriesDTO> getParentCategories() {
         List<Categories> categories = categoriesRepository.findByParentCategoriesIsNull();
         return categories.stream().map(c -> {
-            CategoriesDTO categoriesDTO = new CategoriesDTO();
-            categoriesDTO.setId(c.getId());
-            categoriesDTO.setCategoriesName(c.getCategoryName());
-            return categoriesDTO;
+            CategoriesDTO dto = new CategoriesDTO();
+            dto.setId(c.getId());
+            dto.setCategoriesName(c.getCategoryName());
+            return dto;
         }).toList();
     }
 }
