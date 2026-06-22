@@ -29,7 +29,7 @@ public class AuthController {
         String token = UUID.randomUUID().toString();
         SuccessBasicDTO dto = authService.register(user, token);
 
-        String deepLink = "myapp://auth/verify-mail?token=" + token;
+        String deepLink = "myapp://auth/verify-mail?token=" + token + "&email=" + user.getEmail();
         mailService.sendVerificationEmail(user.getEmail(), deepLink);
         return dto;
     }
@@ -39,7 +39,7 @@ public class AuthController {
         return authService.resetPassword(resetPassword);
     }
 
-    @GetMapping("/verify-email")
+    @GetMapping("/verify-mail")
     public SuccessBasicDTO verifyMail(@RequestParam("token") String token) throws IllegalUserStatusException, EmailAlreadyExistsException, UserNotExistException, DataInvalidException {
         return authService.verifyMail(token);
     }
