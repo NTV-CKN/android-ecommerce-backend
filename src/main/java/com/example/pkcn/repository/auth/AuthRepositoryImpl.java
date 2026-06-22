@@ -5,6 +5,7 @@ import com.example.pkcn.common.HashMD5Utils;
 import com.example.pkcn.common.UserStatus;
 import com.example.pkcn.controller.advice.cus_exception.*;
 import com.example.pkcn.dto.request.ResetPasswordDTO;
+import com.example.pkcn.dto.request.UserLoginGoogleDTO;
 import com.example.pkcn.entity.AccountActivationToken;
 import com.example.pkcn.entity.PasswordReset;
 import com.example.pkcn.entity.User;
@@ -38,6 +39,7 @@ public class AuthRepositoryImpl implements IAuthRepository {
 
         return user.getId() != null;
     }
+
 
     @Override
     public boolean checkUserExistByMail(String email) {
@@ -127,20 +129,6 @@ public class AuthRepositoryImpl implements IAuthRepository {
     }
 
     @Override
-    public boolean activeUserAccount(Integer userId) {
-        String sql = """
-                UPDATE User u
-                SET u.userStatus = :status
-                WHERE id = :userId
-                """;
-
-        return em.createQuery(sql)
-                .setParameter("userId", userId)
-                .setParameter("status", UserStatus.ACTIVE.getStatus())
-                .executeUpdate() > 0;
-    }
-
-    @Override
     //Hàm này trả về đối tượng AccountActivationToken dùng cho việc kiểm tra hạn xác thực,
     //fetch User để thay đổi trạng thái nếu xác thực thành công,...
     public AccountActivationToken getAccountActivationTokenByToken(String token) {
@@ -152,6 +140,19 @@ public class AuthRepositoryImpl implements IAuthRepository {
                 """;
         return em.createQuery(sql, AccountActivationToken.class)
                 .setParameter("token", token)
+                .getSingleResultOrNull();
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        String sql = """
+                SELECT u
+                FROM User u
+                WHERE u.email = :email
+                """;
+
+        return em.createQuery(sql, User.class)
+                .setParameter("email", email)
                 .getSingleResultOrNull();
     }
 }

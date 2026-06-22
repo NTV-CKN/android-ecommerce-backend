@@ -84,11 +84,23 @@ public class User {
         this.password = password;
     }
 
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     public AccountActivationToken getAccountActivationToken() {
         return accountActivationToken;
     }
 
     public void setAccountActivationToken(AccountActivationToken accountActivationToken) {
         this.accountActivationToken = accountActivationToken;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
