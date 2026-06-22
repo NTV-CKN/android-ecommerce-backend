@@ -1,5 +1,6 @@
 package com.example.pkcn.service.user.user_detail_service_impl;
 
+import com.example.pkcn.common.UserStatus;
 import com.example.pkcn.entity.User;
 import com.example.pkcn.repository.user.user_detail_repo.IUserRepository;
 import jakarta.transaction.Transactional;
@@ -27,10 +28,13 @@ public class UserDetailServiceImpl implements UserDetailsService {
         if(user == null)
             throw new UsernameNotFoundException("Không tìm thấy người dùng với email: " + email);
 
+        boolean isBanded = user.getUserStatus().equalsIgnoreCase(UserStatus.BANDED.getStatus());
+
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
                 .authorities("ROLE_" + user.getRole().getNameRole())
+                .accountLocked(isBanded)
                 .build();
     }
 }

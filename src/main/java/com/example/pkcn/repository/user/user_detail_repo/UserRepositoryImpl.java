@@ -2,6 +2,7 @@ package com.example.pkcn.repository.user.user_detail_repo;
 
 import com.example.pkcn.entity.User;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -11,12 +12,8 @@ import org.springframework.stereotype.Repository;
 @Transactional
 @Primary
 public class UserRepositoryImpl implements IUserRepository {
+    @PersistenceContext
     private EntityManager em;
-
-    @Autowired
-    public UserRepositoryImpl(EntityManager entityManager) {
-        em = entityManager;
-    }
 
     @Override
     public User findUserByEmail(String email) {

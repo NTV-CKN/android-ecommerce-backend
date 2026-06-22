@@ -2,7 +2,10 @@ package com.example.pkcn.controller.auth;
 
 import com.example.pkcn.controller.advice.cus_exception.*;
 import com.example.pkcn.dto.request.ResetPasswordDTO;
+import com.example.pkcn.dto.request.UserLoginDTO;
+import com.example.pkcn.dto.request.UserLoginGoogleDTO;
 import com.example.pkcn.dto.request.UserRegisterDTO;
+import com.example.pkcn.dto.response.JwtFromLoginDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
 import com.example.pkcn.service.auth.IAuthService;
 import com.example.pkcn.service.mail.IMailService;
@@ -22,6 +25,20 @@ public class AuthController {
     public AuthController(IAuthService authService, IMailService mailService) {
         this.authService = authService;
         this.mailService = mailService;
+    }
+
+    //End point này xử lí đăng nhập google, cập nhật lại avatar và fullName
+    //Kiểm tra nếu email có tồn tại nhưng phải thuộc Google mới chấp nhận
+    @PostMapping("/login-google")
+    public JwtFromLoginDTO loginGoogle(@RequestBody UserLoginGoogleDTO userLoginGoogleDTO) throws Exception {
+        return authService.loginGoogle(userLoginGoogleDTO);
+    }
+
+    //End point này xử lí đăng nhập tài khoản thông thường, nếu tài khoản đã tồn tại
+    //và type_account là LOCAL thì tạo jwt và đăng nhập
+    @PostMapping("/login-local")
+    public JwtFromLoginDTO loginLocal(@RequestBody UserLoginDTO userLoginDTO) throws Exception {
+        return authService.loginLocal(userLoginDTO);
     }
 
     @PostMapping("/register")

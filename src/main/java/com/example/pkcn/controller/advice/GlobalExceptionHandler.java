@@ -87,6 +87,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<ExceptionResponseDTO> handleUserNotExist(LoginException ex) {
+        ex.printStackTrace();
+        ExceptionResponseDTO error = new ExceptionResponseDTO(
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD REQUEST",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionResponseDTO> handleIllegalArgument(IllegalArgumentException ex) {
         ex.printStackTrace();
