@@ -20,6 +20,9 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserAddress> userAddresses;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private AccountActivationToken accountActivationToken;
+
     @Column(name = "type_account")
     private String typeAccount;
     @Column(name = "full_name")
@@ -79,5 +82,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public AccountActivationToken getAccountActivationToken() {
+        return accountActivationToken;
+    }
+
+    public void setAccountActivationToken(AccountActivationToken accountActivationToken) {
+        this.accountActivationToken = accountActivationToken;
     }
 }
