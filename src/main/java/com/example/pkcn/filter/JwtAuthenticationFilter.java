@@ -53,23 +53,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     );
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-            } else {
-                sendUnauthorizedResponse(response, "Token không hợp lệ hoặc đã bị chỉnh sửa!");
-                return;
             }
+//            else {
+//                sendUnauthorizedResponse(response, "Token không hợp lệ hoặc đã bị chỉnh sửa!");
+//                return;
+//            }
         }
         filterChain.doFilter(request, response);
     }
 
-    private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json;charset=UTF-8");
-
-        String jsonResponse = String.format(
-                "{\"success\": false, \"message\": \"%s\"}",
-                message
-        );
-
-        response.getWriter().write(jsonResponse);
-    }
 }
