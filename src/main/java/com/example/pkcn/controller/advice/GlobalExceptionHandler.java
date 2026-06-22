@@ -12,6 +12,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<ExceptionResponseDTO> handleEmailExist(DataNotFoundException ex) {
+        ex.printStackTrace();
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "BAD REQUEST",
@@ -22,6 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponseDTO> handleEmailExist(EmailAlreadyExistsException ex) {
+        ex.printStackTrace();
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "BAD REQUEST",
@@ -32,6 +34,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalUserStatusException.class)
     public ResponseEntity<ExceptionResponseDTO> handleIllegalUserStatus(IllegalUserStatusException ex) {
+        ex.printStackTrace();
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "BAD REQUEST",
@@ -42,6 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalFormatDataException.class)
     public ResponseEntity<ExceptionResponseDTO> handleIllegalFormatData(IllegalFormatDataException ex) {
+        ex.printStackTrace();
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "BAD REQUEST",
@@ -52,6 +56,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataInvalidException.class)
     public ResponseEntity<ExceptionResponseDTO> handleDataInvalid(DataInvalidException ex) {
+        ex.printStackTrace();
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "BAD REQUEST",
@@ -62,6 +67,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataStillValidException.class)
     public ResponseEntity<ExceptionResponseDTO> handleDataNotInvalidation(DataStillValidException ex) {
+        ex.printStackTrace();
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "BAD REQUEST",
@@ -72,6 +78,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotExistException.class)
     public ResponseEntity<ExceptionResponseDTO> handleUserNotExist(UserNotExistException ex) {
+        ex.printStackTrace();
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "BAD REQUEST",
@@ -82,6 +89,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionResponseDTO> handleIllegalArgument(IllegalArgumentException ex) {
+        ex.printStackTrace();
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "INVALID INPUT",
@@ -92,6 +100,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponseDTO> handleGlobalException(Exception ex) {
+        ex.printStackTrace();
         ExceptionResponseDTO error = new ExceptionResponseDTO(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL SERVER ERROR",

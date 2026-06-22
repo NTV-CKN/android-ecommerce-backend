@@ -1,9 +1,6 @@
 package com.example.pkcn.controller.auth;
 
-import com.example.pkcn.controller.advice.cus_exception.DataStillValidException;
-import com.example.pkcn.controller.advice.cus_exception.EmailAlreadyExistsException;
-import com.example.pkcn.controller.advice.cus_exception.IllegalUserStatusException;
-import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
+import com.example.pkcn.controller.advice.cus_exception.*;
 import com.example.pkcn.dto.request.ResetPasswordDTO;
 import com.example.pkcn.dto.request.UserRegisterDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
@@ -13,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
+
+import java.util.UUID;
 
 @RequestMapping("/api/v1/auth")
 @RestController
@@ -27,9 +26,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public SuccessBasicDTO register(@RequestBody UserRegisterDTO user) throws Exception {
-        SuccessBasicDTO dto = authService.register(user);
+        String token = UUID.randomUUID().toString();
+        SuccessBasicDTO dto = authService.register(user, token);
 
-        String deepLink = "myapp://auth/verify-mail?email=" + user.getEmail();
+        String deepLink = "myapp://auth/verify-mail?token=" + token;
         mailService.sendVerificationEmail(user.getEmail(), deepLink);
         return dto;
     }
@@ -40,8 +40,8 @@ public class AuthController {
     }
 
     @GetMapping("/verify-email")
-    public SuccessBasicDTO verifyMail(@RequestParam("email") String mail) throws IllegalUserStatusException, EmailAlreadyExistsException, UserNotExistException {
-        return authService.verifyMail(mail);
+    public SuccessBasicDTO verifyMail(@RequestParam("token") String token) throws IllegalUserStatusException, EmailAlreadyExistsException, UserNotExistException, DataInvalidException {
+        return authService.verifyMail(token);
     }
 
     @GetMapping("/send-email-reset-password")

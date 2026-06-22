@@ -5,7 +5,7 @@ import com.example.pkcn.common.HashMD5Utils;
 import com.example.pkcn.common.UserStatus;
 import com.example.pkcn.controller.advice.cus_exception.*;
 import com.example.pkcn.dto.request.ResetPasswordDTO;
-import com.example.pkcn.dto.request.UserRegisterDTO;
+import com.example.pkcn.entity.AccountActivationToken;
 import com.example.pkcn.entity.PasswordReset;
 import com.example.pkcn.entity.User;
 import jakarta.persistence.EntityManager;
@@ -29,32 +29,14 @@ public class AuthRepositoryImpl implements IAuthRepository {
     }
 
     @Override
-    public boolean register(UserRegisterDTO user) throws Exception {
+    public boolean register(User user) throws Exception {
         if ((user.getEmail() == null || user.getEmail().isEmpty())
                 || (user.getPassword() == null || user.getPassword().isEmpty()))
             return false;
 
+        em.persist(user);
 
-        if (!AppUtils.isStrongPassword(user.getPassword()))
-            throw new IllegalFormatDataException(
-                    "Mật khẩu yêu cầu lớn hơn 8 kí tự, có ít nhất 1 kí tự hoa, thường, số và kí tự đặc biệt"
-            );
-
-        if (!AppUtils.isFormatEmail(user.getEmail()))
-            throw new IllegalFormatDataException(
-                    "Email không đúng định dạng"
-            );
-
-
-        User userE = new User();
-        userE.setTypeAccount(user.getTypeAccount());
-        userE.setEmail(user.getEmail());
-        userE.setPassword(HashMD5Utils.hashText(user.getPassword()));
-        userE.setUserStatus(UserStatus.VERIFY_MAIL.getStatus());
-
-        em.persist(userE);
-
-        return userE.getId() != null;
+        return user.getId() != null;
     }
 
     @Override
@@ -65,22 +47,6 @@ public class AuthRepositoryImpl implements IAuthRepository {
         List<User> results = query.getResultList();
         User user = results.isEmpty() ? null : results.getFirst();
         return user != null;
-    }
-
-    @Override
-    public boolean verifyMail(String email) throws UserNotExistException, IllegalUserStatusException {
-        String sql = "SELECT u FROM User u WHERE u.email = :email";
-        TypedQuery<User> query = em.createQuery(sql, User.class);
-        query.setParameter("email", email);
-
-        User user = query.getSingleResultOrNull();
-        if (user == null) throw new UserNotExistException("Người dùng không tồn tại");
-        if (!user.getUserStatus().equalsIgnoreCase(UserStatus.VERIFY_MAIL.getStatus()))
-            throw new IllegalUserStatusException("Trạng thái người dùng khác xác thực mail");
-
-        user.setUserStatus(UserStatus.ACTIVE.getStatus());
-
-        return true;
     }
 
     @Override
@@ -158,5 +124,34 @@ public class AuthRepositoryImpl implements IAuthRepository {
             throw new IllegalUserStatusException("Tài khoản không ở trạng thái hoạt động");
 
         return true;
+    }
+
+    @Override
+    public boolean activeUserAccount(Integer userId) {
+        String sql = """
+                UPDATE User u
+                SET u.userStatus = :status
+                WHERE id = :userId
+                """;
+
+        return em.createQuery(sql)
+                .setParameter("userId", userId)
+                .setParameter("status", UserStatus.ACTIVE.getStatus())
+                .executeUpdate() > 0;
+    }
+
+    @Override
+    //Hàm này trả về đối tượng AccountActivationToken dùng cho việc kiểm tra hạn xác thực,
+    //fetch User để thay đổi trạng thái nếu xác thực thành công,...
+    public AccountActivationToken getAccountActivationTokenByToken(String token) {
+        String sql = """
+                SELECT a
+                FROM AccountActivationToken a
+                JOIN FETCH a.user
+                WHERE a.token = :token
+                """;
+        return em.createQuery(sql, AccountActivationToken.class)
+                .setParameter("token", token)
+                .getSingleResultOrNull();
     }
 }
