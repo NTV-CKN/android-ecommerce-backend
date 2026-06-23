@@ -1,11 +1,14 @@
 package com.example.pkcn.repository.product;
 
 import com.example.pkcn.dto.response.FeatureProductDTO;
+import com.example.pkcn.dto.response.ProductDetailsDTO;
+import com.example.pkcn.entity.Product;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ProductRepositoryImpl implements IProductRepository {
@@ -40,4 +43,28 @@ public class ProductRepositoryImpl implements IProductRepository {
         return query.getResultList();
 
     }
+
+    @Override
+    public ProductDetailsDTO findProductById(int id) {
+        String sql = "SELECT new com.example.pkcn.dto.response.ProductDetailsDTO(" +
+                "p.id, " +
+                "p.name, " +
+                "p.subtitle, " +
+                "p.description, " +
+                "p.warrantyPeriod, " +
+                "p.minPrice, " +
+                "p.maxPrice, " +
+                "MAX(pi.urlImage)) " +
+                "FROM Product p " +
+                "LEFT JOIN p.images pi " +
+                "WHERE p.id = :id " +
+                "AND (pi IS NULL OR (pi.isMain = true AND pi.productVariant IS NULL)) " +
+                "GROUP BY p.id, p.name, p.subtitle, p.description, p.warrantyPeriod, p.minPrice, p.maxPrice, p.stock";
+
+
+            TypedQuery<ProductDetailsDTO> query = em.createQuery(sql, ProductDetailsDTO.class);
+            query.setParameter("id", id);
+            return query.getSingleResult();
+    }
+
 }

@@ -1,15 +1,13 @@
 package com.example.pkcn.controller.product;
 
 import com.example.pkcn.dto.response.FeatureProductDTO;
+import com.example.pkcn.dto.response.ProductDetailsDTO;
 import com.example.pkcn.service.product.IProductService;
 import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +25,10 @@ public class ProductController {
     public ResponseEntity<List<FeatureProductDTO>> getFeatureProduct(int limit) {
         List<FeatureProductDTO> list = productService.getFeatureProduct(limit);
         return ResponseEntity.ok(list);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDetailsDTO> getProductDetails(@PathVariable ("id") int id) {
+        ProductDetailsDTO detailsDTO = productService.getProductDetails(id);
+        return ResponseEntity.ok(detailsDTO);
     }
 }
