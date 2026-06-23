@@ -28,4 +28,14 @@ public class ProductController {
         List<FeatureProductDTO> list = productService.getFeatureProduct(limit);
         return ResponseEntity.ok(list);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<FeatureProductDTO>> searchProduct(@RequestParam String keyword) {
+        keyword = keyword.trim();
+        return ResponseEntity.ok(
+                productService.searchProduct(keyword)
+        );
+    }
+
+
 }
