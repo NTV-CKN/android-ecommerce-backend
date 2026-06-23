@@ -9,6 +9,7 @@ import com.example.pkcn.entity.User;
 
 public interface IAuthRepository {
     boolean register(User user) throws Exception;
+    boolean registerUserNoPassword(User user);
     //Phương thức này tạo record user nhưng set status đợi xác thực từ người dùng
     boolean checkUserExistByMail(String email);
     String createTokenResetPassword(String email) throws DataStillValidException, UserNotExistException, IllegalUserStatusException;

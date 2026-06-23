@@ -12,7 +12,7 @@ import com.example.pkcn.entity.AccountActivationToken;
 import com.example.pkcn.entity.Role;
 import com.example.pkcn.entity.User;
 import com.example.pkcn.repository.auth.IAuthRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
@@ -145,7 +145,9 @@ public class AuthServiceImpl implements IAuthService {
             newUser.setFullName(userLoginGoogleDTO.getFullName());
             newUser.setTypeAccount("GOOGLE");
 
-            authRepository.register(newUser);
+            System.out.println(newUser.getEmail());
+
+            authRepository.registerUserNoPassword(newUser);
             user = newUser;
         }else {
             if(!user.getTypeAccount().equalsIgnoreCase(TypeAccount.GOOGLE.name()))
@@ -165,7 +167,10 @@ public class AuthServiceImpl implements IAuthService {
 
         return new JwtFromLoginDTO(
                 accessToken,
-                refreshToken
+                refreshToken,
+                user.getAvatar(),
+                user.getFullName(),
+                user.getId()
         );
     }
 
@@ -192,7 +197,10 @@ public class AuthServiceImpl implements IAuthService {
 
         return new JwtFromLoginDTO(
                 accessToken,
-                refreshToken
+                refreshToken,
+                user.getAvatar(),
+                user.getFullName(),
+                user.getId()
         );
     }
 }
