@@ -12,4 +12,6 @@ import java.util.List;
 
 public interface IProductRepository {
     List<FeatureProductDTO> findFeatureProduct(int limit);
+
+    List<FeatureProductDTO> searchProduct(String keyword);
 }

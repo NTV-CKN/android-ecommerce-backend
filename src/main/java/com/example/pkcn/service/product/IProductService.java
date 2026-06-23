@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface IProductService {
     public List<FeatureProductDTO> getFeatureProduct(int limit);
+
+    public List<FeatureProductDTO> searchProduct(String keyword);
 }

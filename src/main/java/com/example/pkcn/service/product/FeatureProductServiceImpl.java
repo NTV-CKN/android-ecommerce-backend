@@ -21,4 +21,7 @@ public class FeatureProductServiceImpl implements IProductService {
     public List<FeatureProductDTO> getFeatureProduct(int limit) {
         return productRepository.findFeatureProduct(limit);
     }
+
+    @Override
+    public List<FeatureProductDTO> searchProduct(String keyword){return productRepository.searchProduct(keyword);}
 }
