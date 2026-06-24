@@ -1,8 +1,10 @@
 package com.example.pkcn.dto.response;
 
 import com.example.pkcn.entity.Product;
+import com.example.pkcn.entity.ProductVariant;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ProductDetailsDTO {
     private Integer id;
@@ -12,12 +14,15 @@ public class ProductDetailsDTO {
     private Integer warrantyPeriod;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
-    private String mainImage;
+    private List<String> images;
+    private List<ProductVariantDTO> productVariants;
+    private List<ReviewDTO> reviews;
+    private List<RelatedProductDTO> relateProducts;
 
     public ProductDetailsDTO(Product product) {
     }
 
-    public ProductDetailsDTO(Integer id, String name, String subtitle, String description, Integer warrantyPeriod, BigDecimal minPrice, BigDecimal maxPrice, String mainImage) {
+    public ProductDetailsDTO(Integer id, String name, String subtitle, String description, Integer warrantyPeriod, BigDecimal minPrice, BigDecimal maxPrice) {
         this.id = id;
         this.name = name;
         this.subtitle = subtitle;
@@ -25,7 +30,6 @@ public class ProductDetailsDTO {
         this.warrantyPeriod = warrantyPeriod;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
-        this.mainImage = mainImage;
     }
 
     public Integer getId() {
@@ -84,11 +88,34 @@ public class ProductDetailsDTO {
         this.maxPrice = maxPrice;
     }
 
-    public String getMainImage() {
-        return mainImage;
+    public List<String> getImages() {
+        return images;
+    }
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 
-    public void setMainImage(String mainImage) {
-        this.mainImage = mainImage;
+    public List<ProductVariantDTO> getProductVariants() {
+        return productVariants;
+    }
+
+    public void setProductVariants(List<ProductVariantDTO> productVariants) {
+        this.productVariants = productVariants;
+    }
+
+    public List<RelatedProductDTO> getRelateProducts() {
+        return relateProducts;
+    }
+
+    public void setRelateProducts(List<RelatedProductDTO> relateProducts) {
+        this.relateProducts = relateProducts;
+    }
+
+    public List<ReviewDTO> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<ReviewDTO> reviews) {
+        this.reviews = reviews;
     }
 }
