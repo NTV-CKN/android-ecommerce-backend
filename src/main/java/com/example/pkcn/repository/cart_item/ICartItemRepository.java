@@ -20,4 +20,6 @@ public interface ICartItemRepository {
 
     void deleteAllById(Integer cartId);
 
+    Long countVariantByUserId(Integer userId);
+
 }

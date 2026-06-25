@@ -13,4 +13,5 @@ public interface ICartService {
     CartDTO removeItem(Integer userId, Integer itemId);
     CartDTO mergeLocalCart(Integer userId, List<CartLocalDTO> localList);
     CartDTO deleteAll(Integer userId);
+    Long countTotalVariant(Integer userId);
 }
