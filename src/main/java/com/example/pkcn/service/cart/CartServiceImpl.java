@@ -94,6 +94,11 @@ public class CartServiceImpl implements ICartService {
     }
 
     @Override
+    public Long countTotalVariant(Integer userId) {
+        return itemRepository.countVariantByUserId(userId);
+    }
+
+    @Override
     public CartDTO removeItem(Integer userId, Integer itemId) {
         Cart cart = getOrCreateCart(userId);
         CartItem item = em.find(CartItem.class, itemId);

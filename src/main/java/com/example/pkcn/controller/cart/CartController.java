@@ -1,5 +1,6 @@
 package com.example.pkcn.controller.cart;
 
+import com.example.pkcn.dto.response.BadgeCartDTO;
 import com.example.pkcn.dto.response.CartDTO;
 import com.example.pkcn.dto.request.CartLocalDTO;
 import com.example.pkcn.entity.User;
@@ -69,5 +70,13 @@ public class CartController {
         Integer userId = user.getId();
         CartDTO updatedCart = cartService.deleteAll(userId);
         return ResponseEntity.ok(updatedCart);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<BadgeCartDTO> getCount(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findUserByEmail(userDetails.getUsername());
+        Integer userId = user.getId();
+        Long count = cartService.countTotalVariant(userId);
+        return ResponseEntity.ok(new BadgeCartDTO(count));
     }
 }

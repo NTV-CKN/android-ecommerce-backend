@@ -58,4 +58,17 @@ public class CartItemRepositoryImpl implements ICartItemRepository {
     public void delete(CartItem item) {
         em.remove(em.contains(item) ? item : em.merge(item));
     }
+
+    public Long countVariantByUserId(Integer userId) {
+        String query = "SELECT COUNT(ci) FROM CartItem ci WHERE ci.cart.userId = :userId";
+        try {
+            Long count = (Long) em.createQuery(query)
+                    .setParameter("userId", userId)
+                    .getSingleResult();
+            return count != null ? count : 0L;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0L;
+        }
+    }
 }
