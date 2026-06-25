@@ -19,8 +19,9 @@ public class ProductController {
     }
 
     @GetMapping("/feature")
-    public ResponseEntity<List<FeatureProductDTO>> getFeatureProduct(int limit) {
-        List<FeatureProductDTO> list = productService.getFeatureProduct(limit);
+    public ResponseEntity<List<FeatureProductDTO>> getFeatureProduct(@RequestParam(required = false) Integer categoryId,
+                                                                     @RequestParam(defaultValue = "8") int limit) {
+        List<FeatureProductDTO> list = productService.getFeatureProduct(categoryId, limit);
         return ResponseEntity.ok(list);
     }
     @GetMapping("/{id}")

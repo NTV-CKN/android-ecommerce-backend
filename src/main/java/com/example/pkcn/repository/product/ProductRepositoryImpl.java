@@ -19,7 +19,7 @@ public class ProductRepositoryImpl implements IProductRepository {
     }
 
     @Override
-    public List<FeatureProductDTO> findFeatureProduct(int limit) {
+    public List<FeatureProductDTO> findFeatureProduct(Integer categoryId, int limit) {
         String sql = "SELECT new com.example.pkcn.dto.response.FeatureProductDTO(" +
                 "p.id, " +
                 "p.name, " +
@@ -30,14 +30,16 @@ public class ProductRepositoryImpl implements IProductRepository {
                 "FROM Product p " +
                 "LEFT JOIN p.images pi " +
                 "LEFT JOIN p.reviews r " +
+                "LEFT JOIN p.category c " +
                 "WHERE p.status = 1 " +
+                "AND (:categoryId IS NULL OR c.id = :categoryId) " +
                 "AND (pi IS NULL OR (pi.isMain = true AND pi.productVariant IS NULL)) " +
                 "AND (r IS NULL OR r.status = 'ACTIVE') " +
                 "GROUP BY p.id, p.name, p.subtitle, p.minPrice " +
-                "HAVING AVG(r.numStar) >= 4.0" +
                 "ORDER BY AVG(r.numStar) DESC, COUNT(DISTINCT r.id) DESC";
 
         TypedQuery<FeatureProductDTO> query = em.createQuery(sql, FeatureProductDTO.class);
+        query.setParameter("categoryId", categoryId);
         query.setMaxResults(limit);
         return query.getResultList();
 

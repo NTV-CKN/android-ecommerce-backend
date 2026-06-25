@@ -23,8 +23,8 @@ public class FeatureProductServiceImpl implements IProductService {
     }
 
     @Override
-    public List<FeatureProductDTO> getFeatureProduct(int limit) {
-        return productRepository.findFeatureProduct(limit);
+    public List<FeatureProductDTO> getFeatureProduct(Integer categoryId, int limit) {
+        return productRepository.findFeatureProduct(categoryId, limit);
     }
 
     @Override

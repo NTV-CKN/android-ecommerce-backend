@@ -45,6 +45,14 @@ public class Product {
     @Column(name = "update_date")
     private LocalDateTime updateDate;
 
+    @ManyToOne
+    @JoinTable(
+            name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Categories category;
+
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductVariant> variants;
 

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IProductRepository {
-    List<FeatureProductDTO> findFeatureProduct(int limit);
+    List<FeatureProductDTO> findFeatureProduct(Integer categoryId, int limit);
     ProductDetailsDTO findProductById(int id);
     List<String> findImagesProductById(int id);
     List<ProductVariantDTO> findProductVariantById(int id);
