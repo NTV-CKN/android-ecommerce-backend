@@ -8,10 +8,11 @@ import com.example.pkcn.dto.request.ResetPasswordDTO;
 import com.example.pkcn.dto.request.UserLoginGoogleDTO;
 import com.example.pkcn.entity.AccountActivationToken;
 import com.example.pkcn.entity.PasswordReset;
+import com.example.pkcn.entity.Role;
 import com.example.pkcn.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -34,6 +35,26 @@ public class AuthRepositoryImpl implements IAuthRepository {
         if ((user.getEmail() == null || user.getEmail().isEmpty())
                 || (user.getPassword() == null || user.getPassword().isEmpty()))
             return false;
+
+        if (user.getRole() == null) {
+            Role defaultRole = em.getReference(Role.class, 2);
+            user.setRole(defaultRole);
+        }
+
+        em.persist(user);
+
+        return user.getId() != null;
+    }
+
+    @Override
+    public boolean registerUserNoPassword(User user) {
+        if ((user.getEmail() == null || user.getEmail().isEmpty()))
+            return false;
+
+        if (user.getRole() == null) {
+            Role defaultRole = em.getReference(Role.class, 2);
+            user.setRole(defaultRole);
+        }
 
         em.persist(user);
 

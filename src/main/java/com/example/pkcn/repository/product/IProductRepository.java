@@ -18,4 +18,6 @@ public interface IProductRepository {
     List<ProductVariantDTO> findProductVariantById(int id);
     List<ReviewDTO> findReviewById(int id);
     List<RelatedProductDTO> findRelateProductById(int id, int limit);
+
+    List<FeatureProductDTO> searchProduct(String keyword);
 }

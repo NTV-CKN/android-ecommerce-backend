@@ -41,4 +41,5 @@ public class FeatureProductServiceImpl implements IProductService {
         productDTO.setRelateProducts(relateProduct);
         return productDTO;
     }
+    public List<FeatureProductDTO> searchProduct(String keyword){return productRepository.searchProduct(keyword);}
 }

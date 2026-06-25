@@ -103,6 +103,45 @@ public class ProductRepositoryImpl implements IProductRepository {
         TypedQuery<RelatedProductDTO> query = em.createQuery(sql, RelatedProductDTO.class);
         query.setParameter("id", id);
         query.setMaxResults(limit);
+    public List<FeatureProductDTO> searchProduct(
+            String keyword
+    ) {
+        String sql =
+                "SELECT new com.example.pkcn.dto.response.FeatureProductDTO(" +
+                        "p.id, " +
+                        "p.name, " +
+                        "p.subtitle, " +
+                        "p.minPrice, " +
+                        "MAX(pi.urlImage), " +
+                        "AVG(r.numStar)) " +
+
+                        "FROM Product p " +
+                        "LEFT JOIN p.images pi " +
+                        "LEFT JOIN p.reviews r " +
+
+                        "WHERE p.status = 1 " +
+
+                        "AND LOWER(p.name) " +
+                        "LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+
+                        "AND (pi IS NULL OR " +
+                        "(pi.isMain = true " +
+                        "AND pi.productVariant IS NULL)) " +
+
+                        "GROUP BY p.id, " +
+                        "p.name, " +
+                        "p.subtitle, " +
+                        "p.minPrice";
+        TypedQuery<FeatureProductDTO> query =
+                em.createQuery(
+                        sql,
+                        FeatureProductDTO.class
+                );
+        query.setParameter(
+                "keyword",
+                keyword
+        );
+        query.setMaxResults(10);
         return query.getResultList();
     }
 }

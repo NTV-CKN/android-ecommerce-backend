@@ -10,4 +10,5 @@ public interface IProductService {
     public List<FeatureProductDTO> getFeatureProduct(int limit);
 
     public ProductDetailsDTO getProductDetails(int id);
+    public List<FeatureProductDTO> searchProduct(String keyword);
 }

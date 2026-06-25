@@ -31,4 +31,14 @@ public class ProductController {
         ProductDetailsDTO detailsDTO = productService.getProductDetails(id);
         return ResponseEntity.ok(detailsDTO);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<FeatureProductDTO>> searchProduct(@RequestParam String keyword) {
+        keyword = keyword.trim();
+        return ResponseEntity.ok(
+                productService.searchProduct(keyword)
+        );
+    }
+
+
 }
