@@ -3,9 +3,6 @@ package com.example.pkcn.controller.product;
 import com.example.pkcn.dto.response.FeatureProductDTO;
 import com.example.pkcn.dto.response.ProductDetailsDTO;
 import com.example.pkcn.service.product.IProductService;
-import org.hibernate.query.Page;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
