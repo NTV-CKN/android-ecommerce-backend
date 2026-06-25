@@ -1,6 +1,6 @@
 package com.example.pkcn.repository.product;
 
-import com.example.pkcn.dto.response.FeatureProductDTO;
+import com.example.pkcn.dto.response.*;
 import com.example.pkcn.entity.Product;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,9 +9,15 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Optional;
 
 public interface IProductRepository {
     List<FeatureProductDTO> findFeatureProduct(int limit);
+    ProductDetailsDTO findProductById(int id);
+    List<String> findImagesProductById(int id);
+    List<ProductVariantDTO> findProductVariantById(int id);
+    List<ReviewDTO> findReviewById(int id);
+    List<RelatedProductDTO> findRelateProductById(int id, int limit);
 
     List<FeatureProductDTO> searchProduct(String keyword);
 }
