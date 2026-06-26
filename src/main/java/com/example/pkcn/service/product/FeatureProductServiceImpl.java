@@ -21,6 +21,7 @@ public class FeatureProductServiceImpl implements IProductService {
         return productRepository.findFeatureProduct(categoryId, limit);
     }
 
+
     @Override
     public ProductDetailsDTO getProductDetails(int id) {
         ProductDetailsDTO productDTO = productRepository.findProductById(id);

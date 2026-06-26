@@ -79,4 +79,11 @@ public class CartController {
         Long count = cartService.countTotalVariant(userId);
         return ResponseEntity.ok(new BadgeCartDTO(count));
     }
+    @PostMapping("/add")
+    public ResponseEntity<BadgeCartDTO> addToCart(@AuthenticationPrincipal UserDetails userDetails, @RequestBody CartLocalDTO request) {
+        User user = userRepository.findUserByEmail(userDetails.getUsername());
+        Integer userId = user.getId();
+        BadgeCartDTO badgeCartDTO = cartService.addToCart(userId, request);
+        return ResponseEntity.ok(badgeCartDTO);
+    }
 }
