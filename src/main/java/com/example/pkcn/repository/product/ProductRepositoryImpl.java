@@ -222,12 +222,10 @@ public class ProductRepositoryImpl implements IProductRepository {
 
                 sql += " ORDER BY p.minPrice ";
 
-            }
-            else if ("star".equals(sortBy)) {
+            } else if ("star".equals(sortBy)) {
 
                 sql += " ORDER BY COALESCE(AVG(r.numStar),0) ";
-            }
-            else {
+            } else {
 
                 sql += " ORDER BY p.id ";
             }
@@ -236,14 +234,12 @@ public class ProductRepositoryImpl implements IProductRepository {
 
                 sql += " ASC ";
 
-            }
-            else {
+            } else {
 
                 sql += " DESC ";
             }
 
-        }
-        else {
+        } else {
 
             sql += " ORDER BY p.id ASC ";
         }

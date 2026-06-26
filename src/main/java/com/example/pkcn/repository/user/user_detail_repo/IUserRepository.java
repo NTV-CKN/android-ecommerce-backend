@@ -4,5 +4,5 @@ import com.example.pkcn.entity.User;
 
 public interface IUserRepository {
     User findUserByEmail(String email);
-
+    void updateFullName(User user);
 }

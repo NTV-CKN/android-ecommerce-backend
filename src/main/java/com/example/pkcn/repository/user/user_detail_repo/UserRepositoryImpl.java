@@ -27,4 +27,11 @@ public class UserRepositoryImpl implements IUserRepository {
                 .setParameter("email", email)
                 .getSingleResultOrNull();
     }
+
+    @Override
+    public void updateFullName(User user) {
+        em.merge(user);
+    }
+
+
 }
