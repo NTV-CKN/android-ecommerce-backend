@@ -33,6 +33,8 @@ public class UserAddressManageController {
 
     @GetMapping("/view-addresses")
     public List<UserAddressDTO> getUserAddressListByUserId(@AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println(userDetails);
+
         User user = userRepository.findUserByEmail(userDetails.getUsername());
         return userAddressService.getUserAddressListByUserId(user.getId());
     }

@@ -53,16 +53,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     } catch (UsernameNotFoundException e) {
-
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
-//            else {
-//                sendUnauthorizedResponse(response, "Token không hợp lệ hoặc đã bị chỉnh sửa!");
-//                return;
-//            }
+            else {
+                SecurityContextHolder.clearContext();
+                System.out.println("JWT INVALID");
+
+                response.setStatus(
+                        HttpServletResponse.SC_UNAUTHORIZED);
+
+                return;
+            }
         }
+
         filterChain.doFilter(request, response);
     }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
 
+        return path.startsWith("/api/v1/auth/")
+                || path.contains("/api/v1/categories/")
+                || path.contains("/api/v1/product/")
+                || path.contains("/api/v1/shop/")
+                || path.contains("/api/v1/ship-fee-address/");
+    }
 }
