@@ -84,6 +84,7 @@ public class CartController {
         User user = userRepository.findUserByEmail(userDetails.getUsername());
         Integer userId = user.getId();
         BadgeCartDTO badgeCartDTO = cartService.addToCart(userId, request);
+        System.out.println("===== ĐÃ VÀO CONTROLLER =====");
         return ResponseEntity.ok(badgeCartDTO);
     }
 }
