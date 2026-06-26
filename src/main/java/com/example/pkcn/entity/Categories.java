@@ -25,6 +25,9 @@ public class Categories {
     @OneToMany(mappedBy = "parentCategories")
     private List<Categories> childrenCategories;
 
+    @OneToMany(mappedBy = "category")
+    private List<ProductCategory> productCategories;
+
     public Integer getId() {
         return id;
     }
@@ -63,5 +66,15 @@ public class Categories {
 
     public void setChildrenCategories(List<Categories> childrenCategories) {
         this.childrenCategories = childrenCategories;
+    }
+
+    public List<ProductCategory> getProductCategories() {
+        return productCategories;
+    }
+
+    public void setProductCategories(
+            List<ProductCategory> productCategories
+    ) {
+        this.productCategories = productCategories;
     }
 }

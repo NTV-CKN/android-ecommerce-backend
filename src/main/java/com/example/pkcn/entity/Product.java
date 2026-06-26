@@ -53,6 +53,9 @@ public class Product {
     )
     private Categories category;
 
+    @OneToMany(mappedBy = "product")
+    private List<ProductCategory> productCategories;
+
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductVariant> variants;
 
@@ -173,4 +176,5 @@ public class Product {
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
     }
+
 }
