@@ -1,18 +1,16 @@
 package com.example.pkcn.controller.auth;
 
+import com.example.pkcn.common.JwtUtils;
 import com.example.pkcn.controller.advice.cus_exception.*;
-import com.example.pkcn.dto.request.ResetPasswordDTO;
-import com.example.pkcn.dto.request.UserLoginDTO;
-import com.example.pkcn.dto.request.UserLoginGoogleDTO;
-import com.example.pkcn.dto.request.UserRegisterDTO;
+import com.example.pkcn.dto.request.*;
 import com.example.pkcn.dto.response.JwtFromLoginDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
 import com.example.pkcn.service.auth.IAuthService;
 import com.example.pkcn.service.mail.IMailService;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.function.EntityResponse;
 
 import java.util.UUID;
 
@@ -21,10 +19,12 @@ import java.util.UUID;
 public class AuthController {
     private IAuthService authService;
     private IMailService mailService;
+    private JwtUtils jwtUtils;
 
-    public AuthController(IAuthService authService, IMailService mailService) {
+    public AuthController(IAuthService authService, IMailService mailService, JwtUtils jwtUtils) {
         this.authService = authService;
         this.mailService = mailService;
+        this.jwtUtils = jwtUtils;
     }
 
     //End point này xử lí đăng nhập google, cập nhật lại avatar và fullName
@@ -32,6 +32,33 @@ public class AuthController {
     @PostMapping("/login-google")
     public JwtFromLoginDTO loginGoogle(@RequestBody UserLoginGoogleDTO userLoginGoogleDTO) throws Exception {
         return authService.loginGoogle(userLoginGoogleDTO);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+        if (refreshTokenDTO == null || refreshTokenDTO.getRefreshToken().isEmpty())
+            throw new IllegalArgumentException("Tham số không hợp lệ");
+        try {
+        if (jwtUtils.validateToken(refreshTokenDTO.getRefreshToken())) {
+            String email = jwtUtils.getEmailFromToken(refreshTokenDTO.getRefreshToken());
+            String newAccessToken = jwtUtils.generateAccessToken(email);
+
+            System.out.println(newAccessToken);
+
+            JwtFromLoginDTO response = new JwtFromLoginDTO(
+                    newAccessToken,
+                    refreshTokenDTO.getRefreshToken(),
+                    null, null, null
+            );
+            return ResponseEntity.ok(response);
+        } else
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Refresh token không hợp lệ");
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("REFRESH_TOKEN_EXPIRED");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Mã xác thực không hợp lệ");
+        }
     }
 
     //End point này xử lí đăng nhập tài khoản thông thường, nếu tài khoản đã tồn tại
