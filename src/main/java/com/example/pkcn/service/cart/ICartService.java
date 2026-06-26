@@ -1,6 +1,7 @@
 package com.example.pkcn.service.cart;
 
 import com.example.pkcn.dto.request.CartLocalDTO;
+import com.example.pkcn.dto.response.BadgeCartDTO;
 import com.example.pkcn.dto.response.CartDTO;
 import com.example.pkcn.entity.Cart;
 
@@ -14,4 +15,5 @@ public interface ICartService {
     CartDTO mergeLocalCart(Integer userId, List<CartLocalDTO> localList);
     CartDTO deleteAll(Integer userId);
     Long countTotalVariant(Integer userId);
+    BadgeCartDTO addToCart(Integer userId, CartLocalDTO request);
 }

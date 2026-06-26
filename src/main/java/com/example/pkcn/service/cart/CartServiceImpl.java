@@ -1,6 +1,7 @@
 package com.example.pkcn.service.cart;
 
 import com.example.pkcn.dto.request.CartLocalDTO;
+import com.example.pkcn.dto.response.BadgeCartDTO;
 import com.example.pkcn.dto.response.CartDTO;
 import com.example.pkcn.dto.response.CartItemDTO;
 import com.example.pkcn.entity.Cart;
@@ -96,6 +97,17 @@ public class CartServiceImpl implements ICartService {
     @Override
     public Long countTotalVariant(Integer userId) {
         return itemRepository.countVariantByUserId(userId);
+    }
+
+    @Override
+    public BadgeCartDTO addToCart(Integer userId, CartLocalDTO request) {
+        if(request == null){
+            return  new BadgeCartDTO(countTotalVariant(userId));
+        }
+        List<CartLocalDTO> list = List.of(request);
+        this.mergeLocalCart(userId, list);
+        Long totalCount = this.countTotalVariant(userId);
+        return new BadgeCartDTO(totalCount);
     }
 
     @Override
