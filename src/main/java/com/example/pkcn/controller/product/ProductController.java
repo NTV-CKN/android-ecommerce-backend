@@ -1,6 +1,7 @@
 package com.example.pkcn.controller.product;
 
 import com.example.pkcn.dto.response.FeatureProductDTO;
+import com.example.pkcn.dto.response.PageResponseDTO;
 import com.example.pkcn.dto.response.ProductDetailsDTO;
 import com.example.pkcn.service.product.IProductService;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +39,30 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/category")
+    public ResponseEntity<PageResponseDTO<FeatureProductDTO>> getProductByCategory(
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String direction
+
+    ) {
+        return ResponseEntity.ok(
+                productService.getProductByCategory(
+                        categoryId,
+                        page,
+                        pageSize,
+                        minPrice,
+                        maxPrice,
+                        sortBy,
+                        keyword,
+                        direction
+                )
+        );
+    }
 
 }
