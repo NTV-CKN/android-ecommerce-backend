@@ -5,12 +5,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserAddressDTO {
     private Integer id;
+    @JsonProperty("phone_number")
     private String phoneNumber;
+    @JsonProperty("address_detail")
     private String addressDetail;
+    @JsonProperty("province_city")
     private String provinceCity;
-    @JsonProperty("isDefault")
+    @JsonProperty("is_default")
     private Boolean isDefault;
+    @JsonProperty("receiver_name")
     private String receiverName;
+    private Double latitude;
+    private Double longitude;
+
 
     public UserAddressDTO() {
     }
@@ -56,5 +63,13 @@ public class UserAddressDTO {
 
     public String getReceiverName() {
         return receiverName;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
     }
 }
