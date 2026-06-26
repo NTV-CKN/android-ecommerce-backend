@@ -1,12 +1,14 @@
 package com.example.pkcn.controller.product;
 
 import com.example.pkcn.dto.response.FeatureProductDTO;
+import com.example.pkcn.dto.response.PageResponseDTO;
 import com.example.pkcn.dto.response.ProductDetailsDTO;
 import com.example.pkcn.service.product.IProductService;
 import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +25,9 @@ public class ProductController {
     }
 
     @GetMapping("/feature")
-    public ResponseEntity<List<FeatureProductDTO>> getFeatureProduct(int limit) {
-        List<FeatureProductDTO> list = productService.getFeatureProduct(limit);
+    public ResponseEntity<List<FeatureProductDTO>> getFeatureProduct(@RequestParam(required = false) Integer categoryId,
+                                                                     @RequestParam(defaultValue = "8") int limit) {
+        List<FeatureProductDTO> list = productService.getFeatureProduct(categoryId, limit);
         return ResponseEntity.ok(list);
     }
     @GetMapping("/{id}")
@@ -41,5 +44,30 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/category")
+    public ResponseEntity<PageResponseDTO<FeatureProductDTO>> getProductByCategory(
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String direction
+
+    ) {
+        return ResponseEntity.ok(
+                productService.getProductByCategory(
+                        categoryId,
+                        page,
+                        pageSize,
+                        minPrice,
+                        maxPrice,
+                        sortBy,
+                        keyword,
+                        direction
+                )
+        );
+    }
 
 }

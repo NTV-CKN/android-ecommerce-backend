@@ -19,7 +19,7 @@ public class ProductRepositoryImpl implements IProductRepository {
     }
 
     @Override
-    public List<FeatureProductDTO> findFeatureProduct(int limit) {
+    public List<FeatureProductDTO> findFeatureProduct(Integer categoryId, int limit) {
         String sql = "SELECT new com.example.pkcn.dto.response.FeatureProductDTO(" +
                 "p.id, " +
                 "p.name, " +
@@ -30,14 +30,16 @@ public class ProductRepositoryImpl implements IProductRepository {
                 "FROM Product p " +
                 "LEFT JOIN p.images pi " +
                 "LEFT JOIN p.reviews r " +
+                "LEFT JOIN p.category c " +
                 "WHERE p.status = 1 " +
+                "AND (:categoryId IS NULL OR c.id = :categoryId) " +
                 "AND (pi IS NULL OR (pi.isMain = true AND pi.productVariant IS NULL)) " +
                 "AND (r IS NULL OR r.status = 'ACTIVE') " +
                 "GROUP BY p.id, p.name, p.subtitle, p.minPrice " +
-                "HAVING AVG(r.numStar) >= 4.0" +
                 "ORDER BY AVG(r.numStar) DESC, COUNT(DISTINCT r.id) DESC";
 
         TypedQuery<FeatureProductDTO> query = em.createQuery(sql, FeatureProductDTO.class);
+        query.setParameter("categoryId", categoryId);
         query.setMaxResults(limit);
         return query.getResultList();
 
@@ -56,17 +58,17 @@ public class ProductRepositoryImpl implements IProductRepository {
     @Override
     public List<String> findImagesProductById(int id) {
         String sql = "SELECT pi.urlImage FROM ProductImage  pi WHERE pi.product.id = :id AND pi.productVariant IS NULL ORDER BY pi.isMain DESC, pi.id ASC";
-       TypedQuery<String> query = em.createQuery(sql, String.class);
-       query.setParameter("id", id);
-       return query.getResultList();
+        TypedQuery<String> query = em.createQuery(sql, String.class);
+        query.setParameter("id", id);
+        return query.getResultList();
     }
 
     @Override
     public List<ProductVariantDTO> findProductVariantById(int id) {
         String sql = "SELECT new com.example.pkcn.dto.response.ProductVariantDTO(v.id, v.sku, v.name, v.price, v.stock, v.color, v.size, v.gram, (SELECT MAX(pi2.urlImage) FROM ProductImage pi2 WHERE pi2.productVariant = v)) FROM ProductVariant v WHERE v.product.id = :id";
-       TypedQuery<ProductVariantDTO> query = em.createQuery(sql, ProductVariantDTO.class);
-       query.setParameter("id", id);
-       return query.getResultList();
+        TypedQuery<ProductVariantDTO> query = em.createQuery(sql, ProductVariantDTO.class);
+        query.setParameter("id", id);
+        return query.getResultList();
     }
 
     @Override
@@ -145,5 +147,229 @@ public class ProductRepositoryImpl implements IProductRepository {
         );
         query.setMaxResults(10);
         return query.getResultList();
+    }
+
+    @Override
+    public PageResponseDTO<FeatureProductDTO> findProductByCategory(
+            Integer categoryId,
+            Integer page,
+            Integer pageSize,
+            Double minPrice,
+            Double maxPrice,
+            String sortBy,
+            String keyword,
+            String direction
+    ) {
+        page = Math.max(1, page);
+        pageSize = Math.max(1, pageSize);
+
+        String sql =
+                "SELECT new com.example.pkcn.dto.response.FeatureProductDTO(" +
+                        "p.id, " +
+                        "p.name, " +
+                        "p.subtitle, " +
+                        "p.minPrice, " +
+                        "MAX(pi.urlImage), " +
+                        "AVG(r.numStar)) " +
+
+                        "FROM Product p " +
+                        "JOIN p.productCategories pc " +
+                        "LEFT JOIN p.images pi " +
+                        "LEFT JOIN p.reviews r WITH r.status = 'ACTIVE' " +
+
+                        "WHERE p.status = 1 ";
+
+        // filter category
+        if (categoryId != null) {
+            sql +=
+                    " AND ( " +
+                            " pc.category.id = :categoryId " +
+                            " OR " +
+                            " pc.category.parentCategories.id = :categoryId " +
+                            " ) ";
+        }
+
+        // search
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql +=
+                    " AND ( " +
+                            " LOWER(p.name) LIKE LOWER(:keyword) " +
+                            " OR " +
+                            " LOWER(p.subtitle) LIKE LOWER(:keyword) " +
+                            " ) ";
+        }
+
+        // filter price
+        if (minPrice != null) {
+            sql += " AND p.minPrice >= :minPrice ";
+        }
+
+        if (maxPrice != null) {
+            sql += " AND p.minPrice <= :maxPrice ";
+        }
+
+        // image filter
+        sql +=
+                " AND (pi IS NULL OR " +
+                        "(pi.isMain = true AND pi.productVariant IS NULL)) " +
+
+                        " GROUP BY p.id, p.name, p.subtitle, p.minPrice ";
+
+        // sort
+        if (sortBy != null && direction != null) {
+
+            if ("price".equals(sortBy)) {
+
+                sql += " ORDER BY p.minPrice ";
+
+            }
+            else if ("star".equals(sortBy)) {
+
+                sql += " ORDER BY COALESCE(AVG(r.numStar),0) ";
+            }
+            else {
+
+                sql += " ORDER BY p.id ";
+            }
+
+            if ("asc".equals(direction)) {
+
+                sql += " ASC ";
+
+            }
+            else {
+
+                sql += " DESC ";
+            }
+
+        }
+        else {
+
+            sql += " ORDER BY p.id ASC ";
+        }
+
+        System.out.println("JPQL = " + sql);
+
+        TypedQuery<FeatureProductDTO> query =
+                em.createQuery(
+                        sql,
+                        FeatureProductDTO.class
+                );
+
+        if (categoryId != null) {
+            query.setParameter(
+                    "categoryId",
+                    categoryId
+            );
+        }
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            query.setParameter(
+                    "keyword",
+                    "%" + keyword + "%"
+            );
+        }
+
+        if (minPrice != null) {
+            query.setParameter(
+                    "minPrice",
+                    minPrice
+            );
+        }
+
+        if (maxPrice != null) {
+            query.setParameter(
+                    "maxPrice",
+                    maxPrice
+            );
+        }
+
+        query.setFirstResult(
+                (page - 1) * pageSize
+        );
+
+        query.setMaxResults(
+                pageSize
+        );
+
+        List<FeatureProductDTO> products =
+                query.getResultList();
+
+        // count query
+        String countSql =
+                "SELECT COUNT(DISTINCT p.id) " +
+                        "FROM Product p " +
+                        "JOIN p.productCategories pc " +
+                        "WHERE p.status = 1 ";
+
+        if (categoryId != null) {
+            countSql +=
+                    " AND ( " +
+                            " pc.category.id = :categoryId " +
+                            " OR " +
+                            " pc.category.parentCategories.id = :categoryId " +
+                            " ) ";
+        }
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            countSql +=
+                    " AND ( " +
+                            " LOWER(p.name) LIKE LOWER(:keyword) " +
+                            " OR " +
+                            " LOWER(p.subtitle) LIKE LOWER(:keyword) " +
+                            " ) ";
+        }
+
+        if (minPrice != null) {
+            countSql += " AND p.minPrice >= :minPrice ";
+        }
+
+        if (maxPrice != null) {
+            countSql += " AND p.minPrice <= :maxPrice ";
+        }
+
+        TypedQuery<Long> countQuery =
+                em.createQuery(
+                        countSql,
+                        Long.class
+                );
+
+        if (categoryId != null) {
+            countQuery.setParameter(
+                    "categoryId",
+                    categoryId
+            );
+        }
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            countQuery.setParameter(
+                    "keyword",
+                    "%" + keyword + "%"
+            );
+        }
+
+        if (minPrice != null) {
+            countQuery.setParameter(
+                    "minPrice",
+                    minPrice
+            );
+        }
+
+        if (maxPrice != null) {
+            countQuery.setParameter(
+                    "maxPrice",
+                    maxPrice
+            );
+        }
+
+        Long totalElements =
+                countQuery.getSingleResult();
+
+        return new PageResponseDTO<>(
+                products,
+                page,
+                pageSize,
+                totalElements
+        );
     }
 }
