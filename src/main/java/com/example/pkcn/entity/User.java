@@ -17,7 +17,7 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserAddress> userAddresses;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -54,6 +54,10 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public List<UserAddress> getUserAddresses() {
+        return userAddresses;
     }
 
     public String getAvatar() {
@@ -103,4 +107,18 @@ public class User {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    public boolean hasAddressDefault() throws Exception {
+        if(this.userAddresses == null) throw new Exception("Địa chỉ người dùng null");
+
+        return this.userAddresses.stream()
+                .filter(userAddress -> userAddress.getDefault())
+                .count() == 1;
+    }
+
+    public void addAddress(UserAddress userAddress) {
+        if(this.userAddresses != null)
+            this.userAddresses.add(userAddress);
+    }
+
 }
