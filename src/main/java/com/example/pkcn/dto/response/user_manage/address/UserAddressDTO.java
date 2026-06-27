@@ -43,6 +43,8 @@ public class UserAddressDTO {
         this.provinceCity = userAddress.getProvinceCity();
         this.isDefault = userAddress.getDefault();
         this.receiverName = userAddress.getReceiverName();
+        this.latitude = userAddress.getLatitude();
+        this.longitude = userAddress.getLongitude();
     }
 
     public Integer getId() {
