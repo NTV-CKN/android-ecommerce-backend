@@ -1,8 +1,8 @@
 package com.example.pkcn.controller.user_manage;
 
 import com.example.pkcn.dto.request.AddUserAddressDTO;
+import com.example.pkcn.dto.request.UpdateUserAddressDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
-import com.example.pkcn.dto.response.user_manage.address.ShipFeeByAddressDTO;
 import com.example.pkcn.dto.response.user_manage.address.UserAddressDTO;
 import com.example.pkcn.entity.User;
 import com.example.pkcn.repository.user.user_detail_repo.IUserRepository;
@@ -53,5 +53,19 @@ public class UserAddressManageController {
             );
 
         return userAddressService.addUserAddress(userDetails.getUsername(), addUserAddressDTO);
+    }
+
+    @PostMapping("/update-address")
+    public SuccessBasicDTO updateUserAddress(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody UpdateUserAddressDTO updateUserAddressDTO
+    ) throws Exception {
+        if(!shipFeeByAddressService.checkMatchProvinceCity(updateUserAddressDTO.getProvinceCity()))
+            return new SuccessBasicDTO(
+                    "Tỉnh/Thành phố không tìm thấy trong dữ liệu hệ thống",
+                    false
+            );
+
+        return userAddressService.updateUserAddress(userDetails.getUsername(), updateUserAddressDTO);
     }
 }

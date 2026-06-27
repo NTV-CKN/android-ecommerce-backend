@@ -2,6 +2,7 @@ package com.example.pkcn.service.user.address;
 
 import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
 import com.example.pkcn.dto.request.AddUserAddressDTO;
+import com.example.pkcn.dto.request.UpdateUserAddressDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
 import com.example.pkcn.dto.response.user_manage.address.UserAddressDTO;
 import com.example.pkcn.entity.User;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Primary
@@ -46,6 +48,7 @@ public class UserAddressServiceImpl implements IUserAddressService {
 
     @Override
     @Transactional
+    //Logic nếu địa chỉ thêm lên có default = true thì set false cho các địa chỉ khác
     public SuccessBasicDTO addUserAddress(String email, AddUserAddressDTO addUserAddressDTO) throws Exception {
         User user = userAddressRepository.getUserByEmailAndFetchAddresses(email);
         if(user == null)
@@ -73,6 +76,38 @@ public class UserAddressServiceImpl implements IUserAddressService {
 
         return new SuccessBasicDTO(
                 "Thêm địa chỉ người dùng thành công",
+                true
+        );
+    }
+
+    @Override
+    @Transactional
+    //Logic nếu địa chỉ thêm lên không set default = true nhưng trong địa chỉ user hiện có default = false thì hủy
+    public SuccessBasicDTO updateUserAddress(
+            String email,
+            UpdateUserAddressDTO updateUserAddressDTO
+    ) throws Exception {
+        User user = userAddressRepository.getUserByEmailAndFetchAddresses(email);
+        if(user == null)
+            throw new UserNotExistException("Người dùng không tồn tại");
+
+        for(UserAddress userAddress: user.getUserAddresses()) {
+            if(Objects.equals(userAddress.getId(), updateUserAddressDTO.getId())) {
+                if(!updateUserAddressDTO.getDefault() && userAddress.getDefault() && user.hasAddressDefault())
+                    return new SuccessBasicDTO(
+                            "Vui lòng cập nhật địa chỉ mặc định cho địa chỉ khác trước khi cập nhật địa chỉ này",
+                            false
+                    );
+
+                userAddress.updateFrom(updateUserAddressDTO);
+            }else {
+                if(updateUserAddressDTO.getDefault())
+                    userAddress.setDefault(false);
+            }
+        }
+
+        return new SuccessBasicDTO(
+                "Cập nhật thành công",
                 true
         );
     }

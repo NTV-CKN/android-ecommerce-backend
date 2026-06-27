@@ -1,5 +1,6 @@
 package com.example.pkcn.entity;
 
+import com.example.pkcn.dto.request.UpdateUserAddressDTO;
 import jakarta.persistence.*;
 
 @Entity
@@ -83,5 +84,17 @@ public class UserAddress {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void updateFrom(UpdateUserAddressDTO other) {
+        if (other == null) return;
+
+        this.phoneNumber = other.getPhoneNumber();
+        this.addressDetail = other.getAddressDetail();
+        this.provinceCity = other.getProvinceCity();
+        this.isDefault = other.getDefault();
+        this.receiverName = other.getReceiverName();
+        this.latitude = other.getLatitude();
+        this.longitude = other.getLongitude();
     }
 }
