@@ -7,4 +7,5 @@ import java.util.List;
 public interface IShipFeeByAddressService {
     List<ShipFeeByAddressDTO> getShipFeeByAddresses();
     Boolean checkMatchProvinceCity(String provinceCity);
+    ShipFeeByAddressDTO getShipFeeByProvinceCity(String provinceCity);
 }

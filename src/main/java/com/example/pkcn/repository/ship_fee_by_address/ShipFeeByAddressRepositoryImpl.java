@@ -42,4 +42,18 @@ public class ShipFeeByAddressRepositoryImpl implements IShipFeeByAddressReposito
 
         return query.getSingleResultOrNull() != null;
     }
+
+    @Override
+    public ShipFeeByAddress getShipFeeByProvinceCity(String provinceCity) {
+        String sql = """
+                SELECT s
+                FROM ShipFeeByAddress s
+                WHERE s.provinceCity = :provinceCity
+                """;
+
+        TypedQuery<ShipFeeByAddress> query = em.createQuery(sql, ShipFeeByAddress.class);
+        query.setParameter("provinceCity", provinceCity);
+
+        return query.getSingleResultOrNull();
+    }
 }

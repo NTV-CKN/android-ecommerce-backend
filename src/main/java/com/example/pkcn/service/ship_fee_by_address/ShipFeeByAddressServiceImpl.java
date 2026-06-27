@@ -37,4 +37,16 @@ public class ShipFeeByAddressServiceImpl implements IShipFeeByAddressService{
     public Boolean checkMatchProvinceCity(String provinceCity) {
         return shipFeeByAddressRepository.checkMatchProvinceCity(provinceCity);
     }
+
+    @Override
+    public ShipFeeByAddressDTO getShipFeeByProvinceCity(String provinceCity) {
+        ShipFeeByAddress shipFeeByAddress = shipFeeByAddressRepository.getShipFeeByProvinceCity(provinceCity);
+        if(shipFeeByAddress == null)
+            throw new IllegalArgumentException("Tỉnh/Thành phố không tồn tại");
+
+        ShipFeeByAddressDTO shipFeeByAddressDTO = new ShipFeeByAddressDTO();
+        shipFeeByAddressDTO.initData(shipFeeByAddress);
+
+        return shipFeeByAddressDTO;
+    }
 }

@@ -7,4 +7,5 @@ import java.util.List;
 public interface IShipFeeByAddressRepository {
     List<ShipFeeByAddress> getShipFeeByAddresses();
     Boolean checkMatchProvinceCity(String provinceCity);
+    ShipFeeByAddress getShipFeeByProvinceCity(String provinceCity);
 }
