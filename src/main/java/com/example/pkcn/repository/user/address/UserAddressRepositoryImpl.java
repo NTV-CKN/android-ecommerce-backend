@@ -1,5 +1,6 @@
 package com.example.pkcn.repository.user.address;
 
+import com.example.pkcn.entity.User;
 import com.example.pkcn.entity.UserAddress;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -32,5 +33,19 @@ public class UserAddressRepositoryImpl implements IUserAddressRepository {
         query.setParameter("userId", userId);
 
         return query.getResultList();
+    }
+
+    @Override
+    public User getUserByEmailAndFetchAddresses(String email) {
+        String sql = """
+                SELECT u
+                FROM User u
+                LEFT JOIN FETCH u.userAddresses
+                WHERE u.email = :email
+                """;
+        TypedQuery<User> query = em.createQuery(sql, User.class);
+        query.setParameter("email", email);
+
+        return query.getSingleResultOrNull();
     }
 }

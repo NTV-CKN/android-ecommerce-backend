@@ -32,4 +32,9 @@ public class ShipFeeByAddressServiceImpl implements IShipFeeByAddressService{
 
         return results;
     }
+
+    @Override
+    public Boolean checkMatchProvinceCity(String provinceCity) {
+        return shipFeeByAddressRepository.checkMatchProvinceCity(provinceCity);
+    }
 }
