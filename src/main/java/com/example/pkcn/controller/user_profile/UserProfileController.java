@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/api/v1/user-profile")
 public class UserProfileController {
@@ -31,6 +34,8 @@ public class UserProfileController {
     public ResponseEntity<?> updateFullName(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UserUpdateNameDTO req) throws UserNotExistException {
         String email = userDetails.getUsername();
         profileService.updateFullName(email, req.getFullName());
-        return ResponseEntity.ok("Cập nhật thành công");
+        Map map = new HashMap();
+        map.put("success", "Cập nhật thành công");
+        return ResponseEntity.ok(map);
     }
 }

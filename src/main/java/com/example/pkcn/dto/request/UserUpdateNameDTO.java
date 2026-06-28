@@ -3,6 +3,9 @@ package com.example.pkcn.dto.request;
 public class UserUpdateNameDTO {
     String fullName;
 
+    public UserUpdateNameDTO() {
+    }
+
     public String getFullName() {
         return fullName;
     }

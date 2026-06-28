@@ -42,7 +42,6 @@ public class UserProfileServiceImpl implements IUserProfileService {
             throw new UserNotExistException("Không tìm thấy user");
         }
         user.setFullName(fullName);
-        userRepository.updateFullName(user);
     }
 
 
