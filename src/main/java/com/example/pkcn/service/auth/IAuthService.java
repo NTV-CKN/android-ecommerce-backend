@@ -15,4 +15,5 @@ public interface IAuthService {
     SuccessBasicDTO verifyMail(String token) throws DataInvalidException;
     JwtFromLoginDTO loginGoogle(UserLoginGoogleDTO userLoginGoogleDTO) throws Exception;
     JwtFromLoginDTO loginLocal(UserLoginDTO userLoginDTO) throws Exception;
+    SuccessBasicDTO isUserAdmin(String email) throws UserNotExistException;
 }
