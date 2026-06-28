@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ICartItemRepository {
     //load ds item vao cart
-    public List<CartItem> findByCardId(Integer cartId);
+    public List<CartItem> findByCartId(Integer cartId);
     //kiem tra xem san pham do da co san o trong cart chua
     public Optional<CartItem> findByCartIdAndProductVariantId(Integer cartId, Integer productVariantId);
 

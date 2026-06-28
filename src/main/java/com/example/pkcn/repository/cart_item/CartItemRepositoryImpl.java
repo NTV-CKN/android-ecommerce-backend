@@ -16,7 +16,7 @@ public class CartItemRepositoryImpl implements ICartItemRepository {
     EntityManager em;
 
     @Override
-    public List<CartItem> findByCardId(Integer cartId) {
+    public List<CartItem> findByCartId(Integer cartId) {
         String query = "SELECT i FROM CartItem i WHERE i.cart.id = :cartId";
         return em.createQuery(query, CartItem.class)
                 .setParameter("cartId", cartId)
@@ -34,7 +34,7 @@ public class CartItemRepositoryImpl implements ICartItemRepository {
                 .getResultList()
                 .stream().findFirst();
     }
-
+    @Transactional
     @Override
     public void deleteAllById(Integer cartId) {
         String query = "DELETE FROM CartItem i WHERE i.cart.id = :cartId";

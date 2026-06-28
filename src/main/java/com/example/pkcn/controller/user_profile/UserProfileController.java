@@ -33,8 +33,8 @@ public class UserProfileController {
     public ResponseEntity<?> updateFullName(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UserUpdateNameDTO req) throws UserNotExistException {
         String email = userDetails.getUsername();
         profileService.updateFullName(email, req.getFullName());
-        Map map = new HashMap();
-        map.put("success", "Cập nhật thành công");
-        return ResponseEntity.ok(map);
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Cập nhật thành công");
+        return ResponseEntity.ok(response);
     }
 }
