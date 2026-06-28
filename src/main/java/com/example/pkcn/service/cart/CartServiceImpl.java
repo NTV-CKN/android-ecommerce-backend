@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 @Service
 public class CartServiceImpl implements ICartService {
 
-
     @PersistenceContext
     EntityManager em;
 
@@ -54,10 +53,11 @@ public class CartServiceImpl implements ICartService {
     @Override
     public CartDTO getCart(Integer userId) {
         Cart cart = getOrCreateCart(userId);
-        List<CartItem> items = itemRepository.findByCardId(cart.getId());
+        List<CartItem> items = itemRepository.findByCartId(cart.getId());
         return mapToDTO(cart, items);
     }
 
+    @Transactional
     @Override
     public CartDTO updateQuantity(Integer userId, Integer itemId, Integer qty) {
         Cart cart = getOrCreateCart(userId);
@@ -84,7 +84,7 @@ public class CartServiceImpl implements ICartService {
 
         return getCart(userId);
     }
-
+    @Transactional
     @Override
     public CartDTO deleteAll(Integer userId) {
         Cart cart = getOrCreateCart(userId);
@@ -151,7 +151,7 @@ public class CartServiceImpl implements ICartService {
 
         // 3. TỐI ƯU: Lấy toàn bộ danh sách items hiện tại đang có trong DB của giỏ hàng này
         // Chuyển thành Map để kiểm tra xem sản phẩm đã tồn tại chưa với tốc độ O(1) thay vì gọi repository liên tục
-        List<CartItem> currentDbItems = itemRepository.findByCardId(cart.getId());
+        List<CartItem> currentDbItems = itemRepository.findByCartId(cart.getId());
         Map<Integer, CartItem> dbItemMap = currentDbItems.stream()
                 .collect(Collectors.toMap(CartItem::getProductVariantId, item -> item));
 
@@ -193,7 +193,7 @@ public class CartServiceImpl implements ICartService {
         return getCart(userId);
     }
     private void recalculateTotal(Cart cart) {
-        List<CartItem> items = itemRepository.findByCardId(cart.getId());
+        List<CartItem> items = itemRepository.findByCartId(cart.getId());
         BigDecimal total = items.stream()
                 .map(CartItem::getPriceTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -208,7 +208,7 @@ public class CartServiceImpl implements ICartService {
         dto.setTotalPrice(cart.getTotalPrice());
 
         if (items == null || items.isEmpty()) {
-            dto.setCartItemDTOS(new ArrayList<>());
+            dto.setCartItems(new ArrayList<>());
             return dto;
         }
 
@@ -255,7 +255,7 @@ public class CartServiceImpl implements ICartService {
             return itemDTO;
         }).toList();
 
-        dto.setCartItemDTOS(itemDTOs);
+        dto.setCartItems(itemDTOs);
         return dto;
     }
 }

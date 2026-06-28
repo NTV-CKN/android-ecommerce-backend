@@ -6,7 +6,7 @@ import java.util.List;
 public class CartDTO {
     private Integer id;
     private BigDecimal totalPrice;
-    private List<CartItemDTO> cartItemDTOS;
+    private List<CartItemDTO> cartItems;
 
     public Integer getId() {
         return id;
@@ -24,11 +24,11 @@ public class CartDTO {
         this.totalPrice = totalPrice;
     }
 
-    public List<CartItemDTO> getCartItemDTOS() {
-        return cartItemDTOS;
+    public List<CartItemDTO> getCartItems() {
+        return cartItems;
     }
 
-    public void setCartItemDTOS(List<CartItemDTO> cartItemDTOS) {
-        this.cartItemDTOS = cartItemDTOS;
+    public void setCartItems(List<CartItemDTO> cartItems) {
+        this.cartItems = cartItems;
     }
 }
