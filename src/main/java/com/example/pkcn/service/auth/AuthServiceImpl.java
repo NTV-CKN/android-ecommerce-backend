@@ -155,8 +155,8 @@ public class AuthServiceImpl implements IAuthService {
                         "Đăng nhập thất bại, tài khoản hoặc mật khẩu không chính xác"
                 );
 
-            if(user.getUserStatus().equalsIgnoreCase(UserStatus.BANDED.getStatus()))
-                throw new LoginException("Tài khoản này đã bị cấm");
+            if(!user.getUserStatus().equalsIgnoreCase(UserStatus.ACTIVE.getStatus()))
+                throw new LoginException("Tài khoản không khả dụng");
 
             user.setFullName(userLoginGoogleDTO.getFullName());
             user.setAvatar(userLoginGoogleDTO.getAvatar());
@@ -189,8 +189,8 @@ public class AuthServiceImpl implements IAuthService {
             throw new LoginException("Đăng nhập thất bại, tài khoản hoặc mật khẩu không chính xác");
         }
 
-        if(user.getUserStatus().equalsIgnoreCase(UserStatus.BANDED.getStatus()))
-            throw new LoginException("Tài khoản này đã bị cấm");
+        if(!user.getUserStatus().equalsIgnoreCase(UserStatus.ACTIVE.getStatus()))
+            throw new LoginException("Tài khoản không khả dụng");
 
         String accessToken = jwtUtils.generateAccessToken(user.getEmail());
         String refreshToken = jwtUtils.generateRefreshToken(user.getEmail());
