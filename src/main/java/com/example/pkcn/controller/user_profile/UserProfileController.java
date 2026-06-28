@@ -2,8 +2,7 @@ package com.example.pkcn.controller.user_profile;
 
 import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
 import com.example.pkcn.dto.request.UserUpdateNameDTO;
-import com.example.pkcn.dto.response.UserProfileDTO;
-import com.example.pkcn.entity.User;
+import com.example.pkcn.dto.response.user_manage.profile.UserProfileDTO;
 import com.example.pkcn.service.user.profile.IUserProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

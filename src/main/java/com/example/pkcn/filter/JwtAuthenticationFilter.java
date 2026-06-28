@@ -80,6 +80,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.contains("/api/v1/categories/")
                 || path.contains("/api/v1/product/")
                 || path.contains("/api/v1/shop/")
-                || path.contains("/api/v1/ship-fee-address/");
+                || path.contains("/api/v1/ship-fee-address/")
+                || path.contains("/api/v1/slider-show");
     }
 }
