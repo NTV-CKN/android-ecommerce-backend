@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Repository("auth_repository_1")
@@ -175,5 +176,27 @@ public class AuthRepositoryImpl implements IAuthRepository {
         return em.createQuery(sql, User.class)
                 .setParameter("email", email)
                 .getSingleResultOrNull();
+    }
+
+    @Override
+    public boolean isUserAdmin(String email) throws UserNotExistException {
+        String sql = """
+                SELECT u
+                FROM User u
+                LEFT JOIN FETCH u.role
+                WHERE u.email = :email
+                """;
+
+        TypedQuery<User> query = em.createQuery(sql, User.class);
+        query.setParameter("email", email);
+
+        User user = (query.getSingleResultOrNull());
+        if(user == null)
+            throw new UserNotExistException("Người dùng không tồn tại");
+
+        if(user.getRole() == null)
+            throw new UserNotExistException("Người dùng không có role");
+
+        return user.getRole().getNameRole().equalsIgnoreCase("ADMIN");
     }
 }

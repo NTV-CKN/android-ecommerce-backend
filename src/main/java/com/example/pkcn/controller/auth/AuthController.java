@@ -8,6 +8,7 @@ import com.example.pkcn.dto.response.SuccessBasicDTO;
 import com.example.pkcn.service.auth.IAuthService;
 import com.example.pkcn.service.mail.IMailService;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -101,5 +102,19 @@ public class AuthController {
                 "Thành công! Chúng tôi đã gửi mail để reset lại mật khẩu cho bạn",
                 true
         );
+    }
+
+    @PostMapping("/check-role-admin")
+    public ResponseEntity<SuccessBasicDTO> isUserAdmin(@RequestHeader("Authorization") String token) throws UserNotExistException {
+        if(token == null)
+             return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
+                     .body(
+                             new SuccessBasicDTO("Vui lòng đăng nhập", false)
+                     );
+
+        token = token.substring(7);
+        String email = jwtUtils.getEmailFromToken(token);
+
+        return ResponseEntity.ok(authService.isUserAdmin(email));
     }
 }

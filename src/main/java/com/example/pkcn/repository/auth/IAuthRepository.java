@@ -7,6 +7,7 @@ import com.example.pkcn.dto.request.ResetPasswordDTO;
 import com.example.pkcn.entity.AccountActivationToken;
 import com.example.pkcn.entity.User;
 
+
 public interface IAuthRepository {
     boolean register(User user) throws Exception;
     boolean registerUserNoPassword(User user);
@@ -17,4 +18,5 @@ public interface IAuthRepository {
     boolean checkUserExistAndActiveByEmail(String email) throws IllegalUserStatusException, UserNotExistException;
     AccountActivationToken getAccountActivationTokenByToken(String token);
     User getUserByEmail(String email);
+    boolean isUserAdmin(String email) throws UserNotExistException;
 }

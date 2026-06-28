@@ -132,8 +132,8 @@ public class AuthServiceImpl implements IAuthService {
         User user = authRepository.getUserByEmail(userLoginGoogleDTO.getEmail());
 
         //Nếu người dùng chưa tồn tại thì kiểm tra lại định dạng mail và tiến hành lưu dữ liệu
-        if(user == null) {
-            if(!AppUtils.isFormatEmail(userLoginGoogleDTO.getEmail()))
+        if (user == null) {
+            if (!AppUtils.isFormatEmail(userLoginGoogleDTO.getEmail()))
                 throw new IllegalFormatDataException(
                         "Email không phù hợp"
                 );
@@ -149,13 +149,13 @@ public class AuthServiceImpl implements IAuthService {
 
             authRepository.registerUserNoPassword(newUser);
             user = newUser;
-        }else {
-            if(!user.getTypeAccount().equalsIgnoreCase(TypeAccount.GOOGLE.name()))
+        } else {
+            if (!user.getTypeAccount().equalsIgnoreCase(TypeAccount.GOOGLE.name()))
                 throw new EmailAlreadyExistsException(
                         "Đăng nhập thất bại, tài khoản hoặc mật khẩu không chính xác"
                 );
 
-            if(!user.getUserStatus().equalsIgnoreCase(UserStatus.ACTIVE.getStatus()))
+            if (!user.getUserStatus().equalsIgnoreCase(UserStatus.ACTIVE.getStatus()))
                 throw new LoginException("Tài khoản không khả dụng");
 
             user.setFullName(userLoginGoogleDTO.getFullName());
@@ -176,7 +176,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public JwtFromLoginDTO loginLocal(UserLoginDTO userLoginDTO) throws Exception {
-        if(!AppUtils.isFormatEmail(userLoginDTO.getEmail()))
+        if (!AppUtils.isFormatEmail(userLoginDTO.getEmail()))
             throw new IllegalFormatDataException("Email không hợp lệ");
 
         User user = authRepository.getUserByEmail(userLoginDTO.getEmail());
@@ -189,7 +189,7 @@ public class AuthServiceImpl implements IAuthService {
             throw new LoginException("Đăng nhập thất bại, tài khoản hoặc mật khẩu không chính xác");
         }
 
-        if(!user.getUserStatus().equalsIgnoreCase(UserStatus.ACTIVE.getStatus()))
+        if (!user.getUserStatus().equalsIgnoreCase(UserStatus.ACTIVE.getStatus()))
             throw new LoginException("Tài khoản không khả dụng");
 
         String accessToken = jwtUtils.generateAccessToken(user.getEmail());
@@ -201,6 +201,16 @@ public class AuthServiceImpl implements IAuthService {
                 user.getAvatar(),
                 user.getFullName(),
                 user.getId()
+        );
+    }
+
+    @Override
+    public SuccessBasicDTO isUserAdmin(String email) throws UserNotExistException {
+        boolean res = authRepository.isUserAdmin(email);
+
+        return new SuccessBasicDTO(
+                res?"Người dùng này là admin":"Người dùng này không phải admin",
+                res
         );
     }
 }
