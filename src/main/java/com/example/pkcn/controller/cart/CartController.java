@@ -4,18 +4,13 @@ import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
 import com.example.pkcn.dto.response.BadgeCartDTO;
 import com.example.pkcn.dto.response.CartDTO;
 import com.example.pkcn.dto.request.CartLocalDTO;
-import com.example.pkcn.dto.response.UserProfileDTO;
-import com.example.pkcn.entity.User;
-import com.example.pkcn.repository.user.user_detail_repo.IUserRepository;
+import com.example.pkcn.dto.response.user_manage.profile.UserProfileDTO;
 import com.example.pkcn.service.cart.ICartService;
 import com.example.pkcn.service.user.profile.IUserProfileService;
-import com.example.pkcn.service.user.user_detail_service_impl.UserDetailServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/cart")

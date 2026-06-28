@@ -1,4 +1,4 @@
-package com.example.pkcn.dto.response;
+package com.example.pkcn.dto.response.user_manage.profile;
 
 public class UserProfileDTO {
     private Integer id;

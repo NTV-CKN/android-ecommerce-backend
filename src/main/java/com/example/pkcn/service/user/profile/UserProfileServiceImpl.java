@@ -1,10 +1,9 @@
 package com.example.pkcn.service.user.profile;
 
 import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
-import com.example.pkcn.dto.response.UserProfileDTO;
+import com.example.pkcn.dto.response.user_manage.profile.UserProfileDTO;
 import com.example.pkcn.entity.User;
 import com.example.pkcn.repository.user.user_detail_repo.IUserRepository;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
