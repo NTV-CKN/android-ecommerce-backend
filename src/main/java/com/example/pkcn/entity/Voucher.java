@@ -14,9 +14,9 @@ public class Voucher {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    @Column(unique = true)
+    @Column(unique = true, name = "code")
     private String code;
 
     private String title;
@@ -74,7 +74,7 @@ public class Voucher {
     public Voucher() {
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
