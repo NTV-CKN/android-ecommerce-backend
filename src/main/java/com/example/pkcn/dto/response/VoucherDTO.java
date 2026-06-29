@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class VoucherDTO {
-    private Long id;
+    private Integer id;
     private String code;
     private String title;
     private String discountType;

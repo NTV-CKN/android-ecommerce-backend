@@ -18,7 +18,7 @@ public class Voucher {
 
     @Column(unique = true, name = "code")
     private String code;
-
+    @Column(name = "title")
     private String title;
 
     @Enumerated(EnumType.STRING)
