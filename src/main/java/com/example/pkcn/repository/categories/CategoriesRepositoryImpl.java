@@ -23,4 +23,10 @@ public class CategoriesRepositoryImpl implements ICategoriesRepository {
         TypedQuery<Categories> query = em.createQuery(sql, Categories.class);
         return query.getResultList();
     }
+
+    @Override
+    public Categories findById(Integer id) {
+       return em.find(Categories.class, id);
+
+    }
 }

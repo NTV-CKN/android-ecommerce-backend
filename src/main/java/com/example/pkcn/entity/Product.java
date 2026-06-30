@@ -105,6 +105,14 @@ public class Product {
         return folderId;
     }
 
+    public Boolean getFeatured() {
+        return isFeatured;
+    }
+
+    public void setFeatured(Boolean featured) {
+        isFeatured = featured;
+    }
+
     public void setFolderId(String folderId) {
         this.folderId = folderId;
     }

@@ -66,6 +66,14 @@ public class ProductAdminPageDTO {
         return folderId;
     }
 
+    public String getMainImage() {
+        return mainImage;
+    }
+
+    public void setMainImage(String mainImage) {
+        this.mainImage = mainImage;
+    }
+
     public void setFolderId(String folderId) {
         this.folderId = folderId;
     }

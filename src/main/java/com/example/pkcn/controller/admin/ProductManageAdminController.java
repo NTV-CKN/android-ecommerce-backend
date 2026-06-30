@@ -2,14 +2,12 @@ package com.example.pkcn.controller.admin;
 
 import com.example.pkcn.dto.ProductAdminPageDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
+import com.example.pkcn.dto.response.SuccessBasicDTO;
 import com.example.pkcn.entity.Product;
 import com.example.pkcn.service.admin.product.IProductAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,5 +46,10 @@ public class ProductManageAdminController {
         Map<String, String> response = new HashMap<>();
         response.put("sku", uniqueSku);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/add-product")
+    public SuccessBasicDTO addProduct(@RequestBody ProductAdminPageDTO productAdminPageDTO) {
+        return productAdminService.saveProduct(productAdminPageDTO);
     }
 }
