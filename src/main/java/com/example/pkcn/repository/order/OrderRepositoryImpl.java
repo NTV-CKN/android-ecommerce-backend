@@ -14,6 +14,12 @@ import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.pkcn.dto.response.OrderDetailAdminDTO;
+import com.example.pkcn.dto.response.OrderItemDTO;
+import com.example.pkcn.dto.response.VoucherDTO;
+import com.example.pkcn.entity.Order;
+import com.example.pkcn.utils.VoucherJsonUtil;
+
 
 @Repository
 public class OrderRepositoryImpl implements IOrderRepository {
@@ -103,30 +109,32 @@ public class OrderRepositoryImpl implements IOrderRepository {
     }
 
     @Override
-    public List<OrderManageDTO> findAllOrders(
+    public PageResponseDTO<OrderManageDTO> findAllOrders(
+            int page,
+            int limit,
             String status,
             String keyword
     ) {
 
+        int offset = (page - 1) * limit;
+
         String sql = """
-            
-                SELECT new com.example.pkcn.dto.response.OrderManageDTO(
-                o.id,
-                o.user.email,
-                o.totalMustPay,
-                o.statusOrder,
-                o.orderDate
-            )
-            FROM Order o
-            WHERE 1=1
-            """;
+    SELECT new com.example.pkcn.dto.response.OrderManageDTO(
+        o.id,
+        o.user.email,
+        o.totalMustPay,
+        o.statusOrder,
+        o.orderDate
+    )
+    FROM Order o
+    WHERE 1=1
+    """;
 
         boolean hasStatus =
                 status != null && !status.isEmpty();
 
         boolean hasKeyword =
                 keyword != null && !keyword.isEmpty();
-
 
         if (hasStatus) {
             sql += " AND o.statusOrder = :status ";
@@ -158,7 +166,170 @@ public class OrderRepositoryImpl implements IOrderRepository {
             );
         }
 
-        return query.getResultList();
+        query.setFirstResult(offset);
+        query.setMaxResults(limit);
+
+        List<OrderManageDTO> items =
+                query.getResultList();
+
+        String countSql =
+                "SELECT COUNT(o.id) FROM Order o WHERE 1=1 ";
+
+        if (hasStatus) {
+            countSql += " AND o.statusOrder = :status ";
+        }
+
+        if (hasKeyword) {
+            countSql += " AND CAST(o.id as string) LIKE :keyword ";
+        }
+
+        TypedQuery<Long> countQuery =
+                em.createQuery(
+                        countSql,
+                        Long.class
+                );
+
+        if (hasStatus) {
+            countQuery.setParameter(
+                    "status",
+                    status
+            );
+        }
+
+        if (hasKeyword) {
+            countQuery.setParameter(
+                    "keyword",
+                    "%" + keyword + "%"
+            );
+        }
+
+        Long totalElements =
+                countQuery.getSingleResult();
+
+        return new PageResponseDTO<>(
+                items,
+                page,
+                limit,
+                totalElements
+        );
+    }
+
+    @Override
+    public OrderDetailAdminDTO getOrderDetailById(
+            Integer orderId
+    ) {
+
+        String orderSql = """
+
+    SELECT new com.example.pkcn.dto.response.OrderDetailAdminDTO(
+
+        o.id,
+
+        o.user.fullName,
+
+        o.user.email,
+
+        o.totalMustPay,
+
+        o.shippingFee,
+
+        o.statusOrder,
+
+        o.note,
+
+        o.paymentMethodId,
+
+        o.orderDate,
+
+        null,
+
+        null
+
+    )
+
+    FROM Order o
+
+    WHERE o.id = :orderId
+
+    """;
+
+        String itemSql = """
+
+    SELECT new com.example.pkcn.dto.response.OrderItemDTO(
+
+        pv.product.name,
+
+        od.quantity,
+
+        od.priceTotal
+
+    )
+
+    FROM OrderDetail od
+
+    JOIN od.productVariant pv
+
+    WHERE od.order.id = :orderId
+
+    """;
+
+        OrderDetailAdminDTO orderInfo =
+                em.createQuery(
+                                orderSql,
+                                OrderDetailAdminDTO.class
+                        )
+                        .setParameter(
+                                "orderId",
+                                orderId
+                        )
+                        .getSingleResult();
+
+        List<OrderItemDTO> items =
+                em.createQuery(
+                                itemSql,
+                                OrderItemDTO.class
+                        )
+                        .setParameter(
+                                "orderId",
+                                orderId
+                        )
+                        .getResultList();
+
+        Order order =
+                em.find(
+                        Order.class,
+                        orderId
+                );
+
+        List<VoucherDTO> vouchers =
+                VoucherJsonUtil.fromJson(
+                        order.getAppliedVouchers()
+                );
+
+        return new OrderDetailAdminDTO(
+
+                orderInfo.getOrderId(),
+
+                orderInfo.getCustomerName(),
+
+                orderInfo.getCustomerEmail(),
+
+                orderInfo.getTotalPrice(),
+
+                orderInfo.getShippingFee(),
+
+                orderInfo.getStatus(),
+
+                orderInfo.getNote(),
+
+                orderInfo.getPaymentMethodId(),
+
+                orderInfo.getOrderDate(),
+
+                items,
+
+                vouchers
+        );
     }
 
     @Transactional
@@ -181,15 +352,15 @@ public class OrderRepositoryImpl implements IOrderRepository {
                 .setParameter("status", status)
                 .setParameter(
 
-    "orderId", orderId)
+                        "orderId", orderId)
                 .executeUpdate();
     }
     @Transactional
     @Override
     public void cancelOrder(
-                Integer orderId
-                , Integer userId) {
-                String sql = """
+            Integer orderId
+            , Integer userId) {
+        String sql = """
         UPDATE Order o
         SET o.statusOrder = 'cancel'
         WHERE o.id = :orderId
@@ -198,7 +369,7 @@ public class OrderRepositoryImpl implements IOrderRepository {
         """;
 
         int update = em.createQuery(sql)
-                 .setParameter("orderId", orderId)
+                .setParameter("orderId", orderId)
                 .setParameter("userId", userId)
                 .executeUpdate();
 
@@ -243,7 +414,9 @@ public class OrderRepositoryImpl implements IOrderRepository {
         WHERE od.order_id = :orderId
         """;
         em.createNativeQuery(sql)
-        .setParameter("orderId", orderId)
-        .executeUpdate();
+                .setParameter("orderId", orderId)
+                .executeUpdate();
     }
+
+
 }
