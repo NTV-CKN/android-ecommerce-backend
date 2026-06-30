@@ -20,6 +20,8 @@ public class ProductVariant {
     private String color;
     private String size;
     private Integer gram;
+    @OneToOne(mappedBy = "productVariant")
+    private ProductImage productImage;
 
     @Column(name = "create_date")
     private LocalDateTime createDate;

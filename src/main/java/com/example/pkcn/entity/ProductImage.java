@@ -16,7 +16,7 @@ public class ProductImage {
     @Column(name = "is_main")
     private Boolean isMain;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_variant_id")
     private ProductVariant productVariant;
 

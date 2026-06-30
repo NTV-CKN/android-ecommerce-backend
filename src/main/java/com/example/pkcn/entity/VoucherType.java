@@ -2,6 +2,7 @@ package com.example.pkcn.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "voucher_types")
@@ -9,6 +10,9 @@ public class VoucherType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @OneToMany(mappedBy = "voucherType")
+    private List<Voucher> voucherTypes;
 
     @Column(unique = true, name = "code")
     private String code;
