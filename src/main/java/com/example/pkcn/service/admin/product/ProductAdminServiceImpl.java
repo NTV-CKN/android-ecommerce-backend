@@ -17,6 +17,7 @@ import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductAdminServiceImpl implements IProductAdminService {
@@ -115,9 +116,13 @@ public class ProductAdminServiceImpl implements IProductAdminService {
                 }
             }
         }
+
         product.setStock(totalStock);
         product.setMinPrice(minPrice != null ? minPrice : BigDecimal.ZERO);
         product.setMaxPrice(maxPrice != null ? maxPrice : BigDecimal.ZERO);
+
+        if(Objects.equals(product.getMinPrice(), product.getMaxPrice()))
+            product.setMaxPrice(null);
 
         final Product savedProduct = productAdminRepository.saveProduct(product);
 
