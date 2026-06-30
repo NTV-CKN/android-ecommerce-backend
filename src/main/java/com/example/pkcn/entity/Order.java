@@ -15,9 +15,9 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
-    @Column(name = "address_order_id")
-    private Integer addressOrderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_order_id")
+    private AddressOrder addressOrder;
 
     @Column(name = "payment_method_id")
     private Integer paymentMethodId;
@@ -54,17 +54,19 @@ public class Order {
 
     public Order() {
     }
-    public Order(User user, Integer addressOrderId, Integer paymentMethodId,
-                 BigDecimal shippingFee, BigDecimal totalMustPay, String statusOrder,
-                 String note, LocalDateTime deliveryDate) {
+
+    public Order(Integer id, User user, AddressOrder addressOrder, Integer paymentMethodId, BigDecimal shippingFee, BigDecimal totalMustPay, String statusOrder, String note, LocalDateTime orderDate, LocalDateTime deliveryDate, List<OrderDetail> orderDetails) {
+        this.id = id;
         this.user = user;
-        this.addressOrderId = addressOrderId;
+        this.addressOrder = addressOrder;
         this.paymentMethodId = paymentMethodId;
         this.shippingFee = shippingFee;
         this.totalMustPay = totalMustPay;
         this.statusOrder = statusOrder;
         this.note = note;
+        this.orderDate = orderDate;
         this.deliveryDate = deliveryDate;
+        this.orderDetails = orderDetails;
     }
 
     public Integer getId() {
@@ -79,12 +81,12 @@ public class Order {
         this.user = user;
     }
 
-    public Integer getAddressOrderId() {
-        return addressOrderId;
+    public AddressOrder getAddressOrder() {
+        return addressOrder;
     }
 
-    public void setAddressOrderId(Integer addressOrderId) {
-        this.addressOrderId = addressOrderId;
+    public void setAddressOrder(AddressOrder addressOrder) {
+        this.addressOrder = addressOrder;
     }
 
     public Integer getPaymentMethodId() {

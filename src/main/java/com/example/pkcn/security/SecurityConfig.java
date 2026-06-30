@@ -23,6 +23,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**", "/").permitAll()
+                        .requestMatchers("/api/v1/admin-order/**", "/").permitAll()
                         .requestMatchers("/api/v1/categories/**", "/").permitAll()
                         .requestMatchers("/api/v1/product/**").permitAll()
                         .requestMatchers("/api/v1/shop/**", "/").permitAll()
@@ -32,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/cart/**").authenticated()
                         .requestMatchers("/api/v1/ship-fee-address/**", "/").permitAll()
                         .requestMatchers("/api/v1/admin-product/**", "/").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/orders/**").authenticated()
                         .anyRequest().authenticated()
                 ).sessionManagement(
                         session ->
