@@ -24,20 +24,17 @@ public class ProductAdminServiceImpl implements IProductAdminService{
 
     @Override
     @Transactional
-    public PageResponseDTO<ProductAdminPageDTO> getProducts(String keyWord, Integer page, Integer pageSize, String nameCategory) {
+    public PageResponseDTO<ProductAdminPageDTO> getProducts(String keyWord, Integer page, Integer pageSize) {
         if (keyWord != null && keyWord.trim().isEmpty()) {
             keyWord = null;
         }
 
-        if (nameCategory != null && nameCategory.trim().isEmpty()) {
-            nameCategory = null;
-        }
 
         long totalElement = productAdminRepository.getTotalElementByKeywordAndNameCategory(
-                keyWord, nameCategory);
+                keyWord);
 
         List<Product> products = productAdminRepository.getProducts(
-                keyWord, nameCategory, page, pageSize);
+                keyWord, page, pageSize);
 
         List<ProductAdminPageDTO> productsAdmin = new ArrayList<>();
 

@@ -4,5 +4,5 @@ import com.example.pkcn.dto.ProductAdminPageDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
 
 public interface IProductAdminService {
-    PageResponseDTO<ProductAdminPageDTO> getProducts(String keyWord, Integer page, Integer pageSize, String nameCategory);
+    PageResponseDTO<ProductAdminPageDTO> getProducts(String keyWord, Integer page, Integer pageSize);
 }

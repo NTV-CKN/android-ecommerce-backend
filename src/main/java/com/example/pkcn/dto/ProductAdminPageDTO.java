@@ -214,15 +214,11 @@ public class ProductAdminPageDTO {
             }
         }
 
-        if (product.getProductCategories() != null) {
-            for (ProductCategory pc : product.getProductCategories()) {
-                if (pc != null && pc.getCategory() != null) {
-                    CategoriesDTO catDTO = new CategoriesDTO();
-                    catDTO.setId(product.getCategory().getId());
-                    catDTO.setCategoriesName(product.getCategory().getCategoryName());
-                    this.categoriesDTOS.add(catDTO);
-                }
-            }
+        if (product.getCategory() != null) {
+            CategoriesDTO catDTO = new CategoriesDTO();
+            catDTO.setId(product.getCategory().getId());
+            catDTO.setCategoriesName(product.getCategory().getCategoryName());
+            this.categoriesDTOS.add(catDTO);
         }
     }
 }
