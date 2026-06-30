@@ -1,6 +1,8 @@
 package com.example.pkcn.repository.admin.product;
 
 import com.example.pkcn.entity.Product;
+import com.example.pkcn.entity.ProductCategory;
+import com.example.pkcn.entity.ProductImage;
 import com.example.pkcn.entity.ProductVariant;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -89,5 +91,28 @@ public class ProductAdminRepositoryImpl implements IProductAdminRepository{
 
         return query.setParameter("sku", finalSku)
                 .getSingleResultOrNull() != null;
+    }
+
+    @Override
+    public Product saveProduct(Product product) {
+        em.persist(product);
+        return product;
+    }
+
+    @Override
+    public ProductVariant saveProductVariant(ProductVariant productVariant) {
+        em.persist(productVariant);
+        return productVariant;
+    }
+
+    @Override
+    public void saveProductImages(List<ProductImage> images) {
+        for(ProductImage productImage: images)
+            em.persist(productImage);
+    }
+
+    @Override
+    public void saveProductCategory(ProductCategory category) {
+        em.persist(category);
     }
 }
