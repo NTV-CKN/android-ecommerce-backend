@@ -1,7 +1,9 @@
 package com.example.pkcn.repository.admin.product;
 
 import com.example.pkcn.entity.Product;
+import com.example.pkcn.entity.ProductVariant;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -73,5 +75,19 @@ public class ProductAdminRepositoryImpl implements IProductAdminRepository{
                 .getResultList();
 
         return products;
+    }
+
+    @Override
+    public boolean existsBySku(String finalSku) {
+        String sql = """
+                SELECT pv
+                FROM ProductVariant pv
+                WHERE pv.sku = :sku
+                """;
+
+        TypedQuery query = em.createQuery(sql, ProductVariant.class);
+
+        return query.setParameter("sku", finalSku)
+                .getSingleResultOrNull() != null;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,5 +53,36 @@ public class ProductAdminServiceImpl implements IProductAdminService{
         );
 
         return response;
+    }
+
+    @Override
+    public String generateUniqueSku(String productName, String color, String size) {
+        String pCode = convertToRawCode(productName);
+        String cCode = convertToRawCode(color);
+        String sCode = convertToRawCode(size);
+
+        String baseSku = String.format("%s-%s-%s", pCode, cCode, sCode);
+        String finalSku = baseSku;
+
+        boolean isDuplicate = productAdminRepository.existsBySku(finalSku);
+        int safetyCounter = 0;
+
+        while (isDuplicate && safetyCounter < 100) {
+            int randomTail = (int) (Math.random() * 900) + 100;
+            finalSku = baseSku + "-" + randomTail;
+            isDuplicate = productAdminRepository.existsBySku(finalSku);
+            safetyCounter++;
+        }
+
+        return finalSku;
+    }
+
+    private String convertToRawCode(String input) {
+        if (input == null || input.trim().isEmpty()) return "X";
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .replaceAll("[^a-zA-Z0-9]", "")
+                .toUpperCase();
+        return normalized.isEmpty() ? "X" : normalized;
     }
 }
