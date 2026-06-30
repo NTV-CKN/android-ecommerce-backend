@@ -24,14 +24,12 @@ public class ProductManageAdminController {
 
     @GetMapping("/products")
     public PageResponseDTO<ProductAdminPageDTO> getProducts(
-            @RequestParam String keyWord,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "12", name = "page_size") Integer pageSize,
-            @RequestParam String nameCategory
-    ) {
+            @RequestParam("keyWord") String keyWord,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize) {
 
         return productAdminService.getProducts(
-                keyWord, page, pageSize, nameCategory
+                keyWord, page, pageSize
         );
     }
 }
