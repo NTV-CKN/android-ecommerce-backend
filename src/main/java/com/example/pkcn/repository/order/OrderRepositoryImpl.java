@@ -103,11 +103,6 @@ public class OrderRepositoryImpl implements IOrderRepository {
     }
 
     @Override
-    public List<OrderHistoryDTO> findAllOrderHistory(Integer userId, String status, int offset, int limit) {
-        return List.of();
-    }
-
-    @Override
     public List<OrderManageDTO> findAllOrders(
             String status,
             String keyword
@@ -220,14 +215,15 @@ public class OrderRepositoryImpl implements IOrderRepository {
                 SELECT new com.example.pkcn.dto.response.OrderDetailsHistoryDTO(
                 od.id,
                 o.id,
-                (od.price * od.quantity),
+                od.price,
                 od.productVariantId,
                 od.quantity,
-                COALESCE(pv.name, od.productName),
-                COALESCE(pv.image, ''))
+                pv.name,
+                COALESCE(pi.urlImage, ''))
                 FROM OrderDetail od
                 JOIN od.order o
                 LEFT JOIN ProductVariant pv ON pv.id = od.productVariantId
+                LEFT JOIN pv.productImage pi
                 WHERE o.id = :orderId
                 AND o.user.id = :userId
                 ORDER BY od.id
@@ -242,10 +238,9 @@ public class OrderRepositoryImpl implements IOrderRepository {
     protected void restoreProductStock(Integer orderId) {
         String sql = """
         UPDATE product_variants pv
+        JOIN order_details od  ON od.product_variant_id = pv.id
         SET pv.stock = pv.stock + od.quantity
-        FROM order_details od 
-        WHERE od.product_variant_id = pv.id
-        AND od.order_id = :orderId
+        WHERE od.order_id = :orderId
         """;
         em.createNativeQuery(sql)
         .setParameter("orderId", orderId)
