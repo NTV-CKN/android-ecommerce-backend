@@ -1,14 +1,14 @@
 package com.example.pkcn.service.order;
 
 import com.example.pkcn.dto.response.OrderDetailsHistoryDTO;
+import com.example.pkcn.dto.response.OrderDetailAdminDTO;
 import com.example.pkcn.dto.response.OrderHistoryDTO;
+import com.example.pkcn.dto.response.OrderManageDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
 import com.example.pkcn.repository.order.IOrderRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Service;
 
-import com.example.pkcn.dto.response.OrderManageDTO;
-import com.example.pkcn.repository.order.IOrderRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -22,6 +22,12 @@ public class OrderServiceImpl implements IOrderService {
     ) {
         this.orderRepository = orderRepository;
     }
+
+//   @Override
+//    public PageResponseDTO<OrderHistoryDTO> findOrderHistory(Integer userId, String status, Integer page, Integer pageSize) {
+//        return orderRepository.findOrderHistoryById(userId, status, page, pageSize);
+//    }
+
     @Override
     public List<OrderHistoryDTO> getOrderHistory(
             Integer userId,
@@ -44,11 +50,16 @@ public class OrderServiceImpl implements IOrderService {
 
 
     @Override
-    public List<OrderManageDTO> getAllOrders(
+    public PageResponseDTO<OrderManageDTO> getAllOrders(
+            int page,
+            int limit,
             String status,
             String keyword
     ) {
+
         return orderRepository.findAllOrders(
+                page,
+                limit,
                 status,
                 keyword
         );
@@ -74,5 +85,14 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public List<OrderDetailsHistoryDTO> getOrderDetails(Integer orderId, Integer userId) {
         return orderRepository.getOrderDetails(orderId, userId);
+    }
+
+    @Override
+    public OrderDetailAdminDTO getOrderDetailById(
+            Integer orderId
+    ) {
+        return orderRepository.getOrderDetailById(
+                orderId
+        );
     }
 }

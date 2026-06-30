@@ -28,6 +28,11 @@ public class Order {
     @Column(name = "total_must_pay")
     private BigDecimal totalMustPay;
 
+    @Column(
+            name = "applied_vouchers",
+            columnDefinition = "json")
+    private String appliedVouchers;
+
     @Column(name = "status_order")
     private String statusOrder;
 
@@ -55,7 +60,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(Integer id, User user, AddressOrder addressOrder, Integer paymentMethodId, BigDecimal shippingFee, BigDecimal totalMustPay, String statusOrder, String note, LocalDateTime orderDate, LocalDateTime deliveryDate, List<OrderDetail> orderDetails) {
+    public Order(Integer id, User user, AddressOrder addressOrder, Integer paymentMethodId, BigDecimal shippingFee, BigDecimal totalMustPay, String statusOrder, String note, LocalDateTime orderDate, LocalDateTime deliveryDate,String appliedVouchers, List<OrderDetail> orderDetails) {
         this.id = id;
         this.user = user;
         this.addressOrder = addressOrder;
@@ -66,6 +71,7 @@ public class Order {
         this.note = note;
         this.orderDate = orderDate;
         this.deliveryDate = deliveryDate;
+        this.appliedVouchers = appliedVouchers;
         this.orderDetails = orderDetails;
     }
 
@@ -151,5 +157,15 @@ public class Order {
 
     public void setOrderDetails(List<OrderDetail> orderDetails) {
         this.orderDetails = orderDetails;
+    }
+
+    public String getAppliedVouchers() {
+        return appliedVouchers;
+    }
+
+    public void setAppliedVouchers(
+            String appliedVouchers
+    ) {
+        this.appliedVouchers = appliedVouchers;
     }
 }

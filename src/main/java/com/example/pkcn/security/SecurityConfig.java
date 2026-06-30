@@ -23,6 +23,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**", "/").permitAll()
+                        .requestMatchers("/test-voucher-json", "/").permitAll() //test
+                        .requestMatchers("/test-order-voucher", "/").permitAll() //test
                         .requestMatchers("/api/v1/admin-order/**", "/").permitAll()
                         .requestMatchers("/api/v1/categories/**", "/").permitAll()
                         .requestMatchers("/api/v1/product/**").permitAll()

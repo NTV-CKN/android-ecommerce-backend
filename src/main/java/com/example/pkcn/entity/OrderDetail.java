@@ -11,28 +11,42 @@ public class OrderDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    // ORDER
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @Column(name = "product_variant_id")
-    private Integer productVariantId;
+    // PRODUCT VARIANT
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_variant_id")
+    private ProductVariant productVariant;
+
+    // QUANTITY
 
     private Integer quantity;
 
-    @Column(name = "price_total")
-    private BigDecimal price;
+    // TOTAL PRICE
 
+    @Column(name = "price_total")
+    private BigDecimal priceTotal;
 
     public OrderDetail() {
     }
 
-    public OrderDetail(Integer id, Order order, Integer productVariantId, Integer quantity, BigDecimal price) {
+    public OrderDetail(
+            Integer id,
+            Order order,
+            ProductVariant productVariant,
+            Integer quantity,
+            BigDecimal priceTotal
+    ) {
         this.id = id;
         this.order = order;
-        this.productVariantId = productVariantId;
+        this.productVariant = productVariant;
         this.quantity = quantity;
-        this.price = price;
+        this.priceTotal = priceTotal;
     }
 
     public Integer getId() {
@@ -51,12 +65,12 @@ public class OrderDetail {
         this.order = order;
     }
 
-    public Integer getProductVariantId() {
-        return productVariantId;
+    public ProductVariant getProductVariant() {
+        return productVariant;
     }
 
-    public void setProductVariantId(Integer productVariantId) {
-        this.productVariantId = productVariantId;
+    public void setProductVariant(ProductVariant productVariant) {
+        this.productVariant = productVariant;
     }
 
     public Integer getQuantity() {
@@ -67,11 +81,11 @@ public class OrderDetail {
         this.quantity = quantity;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getPriceTotal() {
+        return priceTotal;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setPriceTotal(BigDecimal priceTotal) {
+        this.priceTotal = priceTotal;
     }
 }
