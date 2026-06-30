@@ -1,8 +1,10 @@
 package com.example.pkcn.service.order;
 
+import com.example.pkcn.dto.response.OrderDetailsHistoryDTO;
 import com.example.pkcn.dto.response.OrderHistoryDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
 import com.example.pkcn.repository.order.IOrderRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.example.pkcn.dto.response.OrderManageDTO;
@@ -61,5 +63,16 @@ public class OrderServiceImpl implements IOrderService {
                 orderId,
                 status
         );
+    }
+
+    @Override
+    @Transactional
+    public void cancelOrder(Integer orderId, Integer userId) {
+        orderRepository.cancelOrder(orderId, userId);
+    }
+
+    @Override
+    public List<OrderDetailsHistoryDTO> getOrderDetails(Integer orderId, Integer userId) {
+        return orderRepository.getOrderDetails(orderId, userId);
     }
 }

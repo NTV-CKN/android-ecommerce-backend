@@ -1,5 +1,6 @@
 package com.example.pkcn.repository.order;
 
+import com.example.pkcn.dto.response.OrderDetailsHistoryDTO;
 import com.example.pkcn.dto.response.OrderHistoryDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
 import com.example.pkcn.dto.response.OrderManageDTO;
@@ -19,4 +20,8 @@ public interface IOrderRepository {
             Integer orderId,
             String status
     );
+
+    void cancelOrder(Integer orderId, Integer userId);
+
+    List<OrderDetailsHistoryDTO> getOrderDetails(Integer orderId, Integer userId);
 }

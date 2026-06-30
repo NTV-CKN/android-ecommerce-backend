@@ -1,5 +1,6 @@
 package com.example.pkcn.service.order;
 
+import com.example.pkcn.dto.response.OrderDetailsHistoryDTO;
 import com.example.pkcn.dto.response.OrderHistoryDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
 
@@ -25,4 +26,9 @@ public interface IOrderService {
             Integer orderId,
             String status
     );
+    public void cancelOrder(
+            Integer orderId,
+            Integer userId
+    );
+    List<OrderDetailsHistoryDTO> getOrderDetails(Integer orderId, Integer userId);
 }
