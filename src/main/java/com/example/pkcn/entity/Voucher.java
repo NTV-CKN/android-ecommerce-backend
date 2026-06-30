@@ -1,5 +1,6 @@
 package com.example.pkcn.entity;
 
+import com.example.pkcn.common.DiscountType;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -7,10 +8,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "vouchers")
 public class Voucher {
-
-    public enum DiscountType {
-        FIXED_AMOUNT, PERCENTAGE
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
