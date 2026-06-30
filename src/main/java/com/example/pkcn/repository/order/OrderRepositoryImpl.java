@@ -66,6 +66,11 @@ public class OrderRepositoryImpl implements IOrderRepository {
     }
 
     @Override
+    public List<OrderHistoryDTO> findAllOrderHistory(Integer userId, String status, int offset, int limit) {
+        return List.of();
+    }
+
+    @Override
     public List<OrderManageDTO> findAllOrders(
             String status,
             String keyword
