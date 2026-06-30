@@ -1,9 +1,12 @@
 package com.example.pkcn.service.order;
 
 import com.example.pkcn.dto.response.OrderHistoryDTO;
-import com.example.pkcn.dto.response.OrderManageDTO;
+import com.example.pkcn.dto.response.PageResponseDTO;
 import com.example.pkcn.repository.order.IOrderRepository;
 import org.springframework.stereotype.Service;
+
+import com.example.pkcn.dto.response.OrderManageDTO;
+import com.example.pkcn.repository.order.IOrderRepository;
 
 import java.util.List;
 
@@ -16,6 +19,11 @@ public class OrderServiceImpl implements IOrderService {
             IOrderRepository orderRepository
     ) {
         this.orderRepository = orderRepository;
+    }
+  
+   @Override
+    public PageResponseDTO<OrderHistoryDTO> findOrderHistory(Integer userId, String status, Integer page, Integer pageSize) {
+        return orderRepository.findOrderHistoryById(userId, status, page, pageSize);
     }
 
     @Override

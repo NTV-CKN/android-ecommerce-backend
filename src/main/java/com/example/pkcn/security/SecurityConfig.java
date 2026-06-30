@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/user-manage-address/**", "/").authenticated()
                         .requestMatchers("/api/v1/cart/**").authenticated()
                         .requestMatchers("/api/v1/ship-fee-address/**", "/").permitAll()
+                        .requestMatchers("/api/v1/orders/**").authenticated()
                         .anyRequest().authenticated()
                 ).sessionManagement(
                         session ->
