@@ -120,4 +120,12 @@ public class ProductVariant {
     public void setProduct(Product product) {
         this.product = product;
     }
+
+    public ProductImage getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(ProductImage productImage) {
+        this.productImage = productImage;
+    }
 }
