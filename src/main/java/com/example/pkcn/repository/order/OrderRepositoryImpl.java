@@ -1,5 +1,6 @@
 package com.example.pkcn.repository.order;
 
+import com.example.pkcn.dto.response.OrderDetailsHistoryDTO;
 import com.example.pkcn.dto.response.OrderHistoryDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
 import jakarta.persistence.EntityManager;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class OrderRepositoryImpl implements IOrderRepository {
     private final EntityManager em;
+
     public OrderRepositoryImpl(EntityManager em) {
         this.em = em;
     }
@@ -38,14 +40,14 @@ public class OrderRepositoryImpl implements IOrderRepository {
                 "FROM Order o " +
                 "JOIN o.addressOrder ao " +
                 "WHERE o.user.id = :userId ";
-        if(status != null && !status.isEmpty()){
+        if (status != null && !status.isEmpty()) {
             sql += " AND o.statusOrder = :status ";
         }
         sql += " ORDER BY o.orderDate DESC";
         TypedQuery<OrderHistoryDTO> query = em.createQuery(sql, OrderHistoryDTO.class);
         query.setParameter("userId", userId);
         if (status != null && !status.isEmpty()) {
-        query.setParameter("status", status);
+            query.setParameter("status", status);
         }
         int offset = (page - 1) * pageSize;
         query.setFirstResult(offset);
@@ -53,7 +55,7 @@ public class OrderRepositoryImpl implements IOrderRepository {
         List<OrderHistoryDTO> list = query.getResultList();
 
         String sqlCount = "SELECT COUNT(o) FROM Order o WHERE o.user.id = :userId ";
-        if(status != null && !status.isEmpty()) {
+        if (status != null && !status.isEmpty()) {
             sqlCount += " AND o.statusOrder = :status ";
         }
         TypedQuery<Long> queryCount = em.createQuery(sqlCount, Long.class);
@@ -62,7 +64,42 @@ public class OrderRepositoryImpl implements IOrderRepository {
             queryCount.setParameter("status", status);
         }
         Long count = queryCount.getSingleResult();
-        return new PageResponseDTO<>(list,page,pageSize,count);
+        return new PageResponseDTO<>(list, page, pageSize, count);
+    }
+
+    @Override
+    public List<OrderHistoryDTO> findAllOrderHistory(Integer userId, String status, int offset, int limit) {
+        String sql = "SELECT new com.example.pkcn.dto.response.OrderHistoryDTO(" +
+                "o.id, " +
+                "o.orderDate, " +
+                "o.deliveryDate, " +
+                "o.shippingFee, " +
+                "o.totalMustPay, " +
+                "o.statusOrder, " +
+                "o.note, " +
+                "ao.receiverName, " +
+                "ao.addressDetail, " +
+                "ao.provinceCity) " +
+                "FROM Order o " +
+                "JOIN o.addressOrder ao " +
+                "WHERE o.user.id = :userId ";
+
+        if (status != null && !status.isEmpty()) {
+            sql += " AND o.statusOrder = :status ";
+        }
+        sql += " ORDER BY o.orderDate DESC";
+
+        TypedQuery<OrderHistoryDTO> query = em.createQuery(sql, OrderHistoryDTO.class);
+        query.setParameter("userId", userId);
+
+        if (status != null && !status.isEmpty()) {
+            query.setParameter("status", status);
+        }
+
+        query.setFirstResult(offset);
+        query.setMaxResults(limit);
+
+        return query.getResultList();
     }
 
     @Override
@@ -77,7 +114,8 @@ public class OrderRepositoryImpl implements IOrderRepository {
     ) {
 
         String sql = """
-            SELECT new com.example.pkcn.dto.response.OrderManageDTO(
+            
+                SELECT new com.example.pkcn.dto.response.OrderManageDTO(
                 o.id,
                 o.user.email,
                 o.totalMustPay,
@@ -135,15 +173,82 @@ public class OrderRepositoryImpl implements IOrderRepository {
             String status
     ) {
 
-        String sql = """
-            UPDATE Order o
-            SET o.statusOrder = :status
+        String sql =
+                """
+            
+                UPDATE Order o
+                            SET o.statusOrder = :
+                status
             WHERE o.id = :orderId
             """;
 
         em.createQuery(sql)
                 .setParameter("status", status)
-                .setParameter("orderId", orderId)
+                .setParameter(
+
+    "orderId", orderId)
                 .executeUpdate();
+    }
+    @Transactional
+    @Override
+    public void cancelOrder(
+                Integer orderId
+                , Integer userId) {
+                String sql = """
+        UPDATE Order o
+        SET o.statusOrder = 'cancel'
+        WHERE o.id = :orderId
+        AND o.user.id = :userId
+        AND o.statusOrder IN ('pending_approve', 'approve_by_admin')
+        """;
+
+        int update = em.createQuery(sql)
+                 .setParameter("orderId", orderId)
+                .setParameter("userId", userId)
+                .executeUpdate();
+
+        if (update > 0) {
+            restoreProductStock(orderId);
+        } else {
+            throw new RuntimeException("Không thể hủy đơn hàng! Đơn hàng không tồn tại hoặc không trong trạng thái cho phép.");
+        }
+    }
+
+    @Override
+    public List<OrderDetailsHistoryDTO> getOrderDetails(Integer orderId, Integer userId) {
+        String sql = """
+                SELECT new com.example.pkcn.dto.response.OrderDetailsHistoryDTO(
+                od.id,
+                o.id,
+                (od.price * od.quantity),
+                od.productVariantId,
+                od.quantity,
+                COALESCE(pv.name, od.productName),
+                COALESCE(pv.image, ''))
+                FROM OrderDetail od
+                JOIN od.order o
+                LEFT JOIN ProductVariant pv ON pv.id = od.productVariantId
+                WHERE o.id = :orderId
+                AND o.user.id = :userId
+                ORDER BY od.id
+                """;
+        TypedQuery<OrderDetailsHistoryDTO> query = em.createQuery(sql, OrderDetailsHistoryDTO.class);
+        query.setParameter("orderId", orderId);
+        query.setParameter("userId", userId);
+        return query.getResultList();
+    }
+
+    @Transactional
+    protected void restoreProductStock(Integer orderId) {
+        String sql = """
+        UPDATE product_variants pv
+        SET pv.stock = pv.stock + od.quantity
+        FROM order_details od 
+        WHERE od.product_variant_id = pv.id
+        AND od.order_id = :orderId
+        """;
+        em.createNativeQuery(sql)
+        .setParameter("orderId", orderId)
+        .executeUpdate();
     }
 }
