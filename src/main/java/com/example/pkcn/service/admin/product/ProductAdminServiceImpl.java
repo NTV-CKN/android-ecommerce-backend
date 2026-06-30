@@ -1,10 +1,15 @@
 package com.example.pkcn.service.admin.product;
 
+import com.example.pkcn.dto.ProductAdminPageDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
 import com.example.pkcn.entity.Product;
 import com.example.pkcn.repository.admin.product.IProductAdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ProductAdminServiceImpl implements IProductAdminService{
@@ -18,7 +23,37 @@ public class ProductAdminServiceImpl implements IProductAdminService{
     }
 
     @Override
-    public PageResponseDTO<Product> getProducts(String keyWord, Integer page, Integer pageSize, String nameCategory) {
-        return null;
+    @Transactional
+    public PageResponseDTO<ProductAdminPageDTO> getProducts(String keyWord, Integer page, Integer pageSize, String nameCategory) {
+        if (keyWord != null && keyWord.trim().isEmpty()) {
+            keyWord = null;
+        }
+
+        if (nameCategory != null && nameCategory.trim().isEmpty()) {
+            nameCategory = null;
+        }
+
+        long totalElement = productAdminRepository.getTotalElementByKeywordAndNameCategory(
+                keyWord, nameCategory);
+
+        List<Product> products = productAdminRepository.getProducts(
+                keyWord, nameCategory, page, pageSize);
+
+        List<ProductAdminPageDTO> productsAdmin = new ArrayList<>();
+
+        for(Product product: products) {
+            ProductAdminPageDTO productAdminPageDTO = new ProductAdminPageDTO();
+            productAdminPageDTO.initData(product);
+            productsAdmin.add(productAdminPageDTO);
+        }
+
+        PageResponseDTO<ProductAdminPageDTO> response = new PageResponseDTO<>(
+                productsAdmin,
+                page,
+                pageSize,
+                totalElement
+        );
+
+        return response;
     }
 }

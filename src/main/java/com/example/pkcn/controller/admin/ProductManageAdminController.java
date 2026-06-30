@@ -1,5 +1,6 @@
 package com.example.pkcn.controller.admin;
 
+import com.example.pkcn.dto.ProductAdminPageDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
 import com.example.pkcn.entity.Product;
 import com.example.pkcn.service.admin.product.IProductAdminService;
@@ -22,13 +23,15 @@ public class ProductManageAdminController {
     }
 
     @GetMapping("/products")
-    public PageResponseDTO<Product> getProducts(
-            @RequestParam(name = "key_word") String keyWord,
+    public PageResponseDTO<ProductAdminPageDTO> getProducts(
+            @RequestParam String keyWord,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "12", name = "page_size") Integer pageSize,
-            @RequestParam(name = "name_category") String nameCategory
+            @RequestParam String nameCategory
     ) {
 
-        return null;
+        return productAdminService.getProducts(
+                keyWord, page, pageSize, nameCategory
+        );
     }
 }

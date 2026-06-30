@@ -2,6 +2,10 @@ package com.example.pkcn.dto;
 
 import com.example.pkcn.dto.response.CategoriesDTO;
 import com.example.pkcn.dto.response.ProductVariantDTO;
+import com.example.pkcn.entity.Product;
+import com.example.pkcn.entity.ProductCategory;
+import com.example.pkcn.entity.ProductImage;
+import com.example.pkcn.entity.ProductVariant;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -152,5 +156,73 @@ public class ProductAdminPageDTO {
 
     public void setCategoriesDTOS(List<CategoriesDTO> categoriesDTOS) {
         this.categoriesDTOS = categoriesDTOS;
+    }
+
+    public void initData(Product product) {
+        if (product == null) return;
+
+        this.id = product.getId();
+        this.folderId = product.getFolderId();
+        this.name = product.getName();
+        this.warrantyPeriod = product.getWarrantyPeriod();
+        this.subtitle = product.getSubtitle();
+        this.description = product.getDescription();
+        this.minPrice = product.getMinPrice();
+        this.maxPrice = product.getMaxPrice();
+        this.stock = product.getStock();
+
+        this.status = (product.getStatus() != null && product.getStatus() == 1);
+
+        this.images = new ArrayList<>();
+        this.productVariantDTOS = new ArrayList<>();
+        this.categoriesDTOS = new ArrayList<>();
+
+        if (product.getImages() != null) {
+            for (ProductImage img : product.getImages()) {
+                if (img != null && img.getUrlImage() != null) {
+                    if (img.getIsMain()) {
+                        this.mainImage = img.getUrlImage();
+                        continue;
+                    }
+                    this.images.add(img.getUrlImage());
+                }
+            }
+        }
+
+        if (product.getVariants() != null) {
+            for (ProductVariant variant : product.getVariants()) {
+                if (variant != null) {
+                    String variantImgUrl = null;
+                    if (variant.getProductImage() != null) {
+                        variantImgUrl = variant.getProductImage().getUrlImage();
+                    }
+
+                    ProductVariantDTO variantDTO = new ProductVariantDTO(
+                            variant.getId(),
+                            variant.getSku(),
+                            variant.getName(),
+                            variant.getPrice(),
+                            variant.getStock(),
+                            variant.getColor(),
+                            variant.getSize(),
+                            variant.getGram(),
+                            variantImgUrl
+                    );
+
+                    this.productVariantDTOS.add(variantDTO);
+                }
+            }
+        }
+
+        if (product.getProductCategories() != null) {
+            for (ProductCategory pc : product.getProductCategories()) {
+                if (pc != null && pc.getCategory() != null) {
+                    CategoriesDTO catDTO = new CategoriesDTO();
+                    catDTO.setId(product.getCategory().getId());
+                    catDTO.setCategoriesName(product.getCategory().getCategoryName());
+                    this.categoriesDTOS.add(catDTO);
+                }
+            }
+        }
     }
 }
