@@ -5,10 +5,14 @@ import com.example.pkcn.dto.response.PageResponseDTO;
 import com.example.pkcn.entity.Product;
 import com.example.pkcn.service.admin.product.IProductAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RequestMapping("/api/v1/admin-product")
 @RestController
@@ -31,5 +35,18 @@ public class ProductManageAdminController {
         return productAdminService.getProducts(
                 keyWord, page, pageSize
         );
+    }
+
+    @GetMapping("/generate-sku")
+    public ResponseEntity<Map<String, String>> generateAndCheckSku(
+            @RequestParam String productName,
+            @RequestParam String color,
+            @RequestParam String size) {
+
+        String uniqueSku = productAdminService.generateUniqueSku(productName, color, size);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("sku", uniqueSku);
+        return ResponseEntity.ok(response);
     }
 }

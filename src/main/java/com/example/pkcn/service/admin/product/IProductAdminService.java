@@ -5,4 +5,6 @@ import com.example.pkcn.dto.response.PageResponseDTO;
 
 public interface IProductAdminService {
     PageResponseDTO<ProductAdminPageDTO> getProducts(String keyWord, Integer page, Integer pageSize);
+
+    String generateUniqueSku(String productName, String color, String size);
 }

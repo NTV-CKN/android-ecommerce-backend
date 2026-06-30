@@ -8,4 +8,6 @@ public interface IProductAdminRepository {
     long getTotalElementByKeywordAndNameCategory(String keyWord);
     List<Product> getProducts(String keyWord,
                               Integer page, Integer pageSize);
+
+    boolean existsBySku(String finalSku);
 }
