@@ -22,12 +22,6 @@ public class OrderServiceImpl implements IOrderService {
     ) {
         this.orderRepository = orderRepository;
     }
-  
-   @Override
-    public PageResponseDTO<OrderHistoryDTO> findOrderHistory(Integer userId, String status, Integer page, Integer pageSize) {
-        return orderRepository.findOrderHistoryById(userId, status, page, pageSize);
-    }
-
     @Override
     public List<OrderHistoryDTO> getOrderHistory(
             Integer userId,
@@ -42,6 +36,12 @@ public class OrderServiceImpl implements IOrderService {
                 limit
         );
     }
+
+    @Override
+    public PageResponseDTO<OrderHistoryDTO> findOrderHistory(Integer userId, String status, Integer page, Integer pageSize) {
+        return orderRepository.findOrderHistoryById(userId, status, page, pageSize);
+    }
+
 
     @Override
     public List<OrderManageDTO> getAllOrders(
