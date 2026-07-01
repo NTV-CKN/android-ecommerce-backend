@@ -5,12 +5,12 @@ import com.example.pkcn.entity.ProductCategory;
 import com.example.pkcn.entity.ProductImage;
 import com.example.pkcn.entity.ProductVariant;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
 @Repository
 public class ProductAdminRepositoryImpl implements IProductAdminRepository{
     private EntityManager em;
@@ -114,5 +114,39 @@ public class ProductAdminRepositoryImpl implements IProductAdminRepository{
     @Override
     public void saveProductCategory(ProductCategory category) {
         em.persist(category);
+    }
+
+    @Override
+    public Product findProductById(Integer id) {
+        return em.find(Product.class, id);
+    }
+
+    public void deleteMainImageByProductId(Integer productId) {
+        em.createQuery("DELETE FROM ProductImage pi WHERE pi.product.id = :productId AND pi.isMain = true")
+                .setParameter("productId", productId).executeUpdate();
+    }
+
+    public void deleteSubImagesByProductId(Integer productId) {
+        em.createQuery("DELETE FROM ProductImage pi WHERE pi.product.id = :productId AND pi.isMain = false AND pi.productVariant IS NULL")
+                .setParameter("productId", productId).executeUpdate();
+    }
+
+    public ProductVariant findVariantBySkuAndProductId(String sku, Integer productId) {
+        try {
+            return em.createQuery("FROM ProductVariant pv WHERE pv.sku = :sku AND pv.product.id = :productId", ProductVariant.class)
+                    .setParameter("sku", sku).setParameter("productId", productId).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public void deleteImageByVariantId(Integer variantId) {
+        em.createQuery("DELETE FROM ProductImage pi WHERE pi.productVariant.id = :variantId")
+                .setParameter("variantId", variantId).executeUpdate();
+    }
+
+    public void deleteProductCategoriesByProductId(Integer productId) {
+        em.createQuery("DELETE FROM ProductCategory pc WHERE pc.id.productId = :productId")
+                .setParameter("productId", productId).executeUpdate();
     }
 }
