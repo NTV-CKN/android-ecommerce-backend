@@ -1,5 +1,6 @@
 package com.example.pkcn.controller.user_manage;
 
+import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
 import com.example.pkcn.dto.request.AddUserAddressDTO;
 import com.example.pkcn.dto.request.UpdateUserAddressDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
@@ -67,5 +68,13 @@ public class UserAddressManageController {
             );
 
         return userAddressService.updateUserAddress(userDetails.getUsername(), updateUserAddressDTO);
+    }
+
+    @PostMapping("/remove-address")
+    public SuccessBasicDTO removeUserAddress(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody UserAddressDTO userAddressDTO
+    ) throws UserNotExistException {
+        return userAddressService.removeUserAddress(userAddressDTO, userDetails.getUsername());
     }
 }
