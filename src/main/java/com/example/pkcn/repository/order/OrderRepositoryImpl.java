@@ -3,10 +3,10 @@ package com.example.pkcn.repository.order;
 import com.example.pkcn.dto.response.OrderDetailsHistoryDTO;
 import com.example.pkcn.dto.response.OrderHistoryDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import com.example.pkcn.dto.response.OrderManageDTO;
 import jakarta.persistence.EntityManager;
@@ -331,6 +331,63 @@ public class OrderRepositoryImpl implements IOrderRepository {
                 vouchers
         );
     }
+    @Transactional
+    @Override
+    public void saveOrder(Order order) {
+        if(order.getId() == null){
+            em.persist(order);
+        }else{
+            em.merge(order);
+        }
+    }
+
+    @Override
+    public int getProductStock(Integer productVariantId) {
+        String sql ="SELECT pv.stock FROM ProductVariant pv WHERE pv.id = :productVariantId";
+        try {
+            return em.createQuery(sql, Integer.class)
+                    .setParameter("productVariantId", productVariantId)
+                    .getSingleResult();
+        }catch (Exception e){
+            return 0;
+        }
+    }
+    @Transactional
+    @Override
+    public void updateProductStock(Integer productVariantId, int quantityToSubtract) {
+        String sql = "UPDATE ProductVariant pv SET pv.stock = pv.stock - :quantity WHERE pv.id = :productVariantId";
+        Query query = em.createQuery(sql);
+        query.setParameter("productVariantId", productVariantId);
+        query.setParameter("quantity", quantityToSubtract);
+        query.executeUpdate();
+    }
+    @Transactional
+    @Override
+    public void deleteCartItem(Integer userId, Integer productVariantId) {
+        String sql = "DELETE FROM CartItem ci WHERE ci.cart.userId = :userId AND ci.productVariantId = :productVariantId";
+        em.createQuery(sql)
+                .setParameter("userId", userId)
+                .setParameter("productVariantId", productVariantId)
+                .executeUpdate();
+    }
+
+    @Override
+    public BigDecimal getShippingFeeByAddressId(Integer addressOrderId) {
+        String sql = "SELECT sf.price FROM ShipFeeByAddress sf " +
+                "WHERE TRIM(LOWER(sf.provinceCity)) = TRIM(LOWER(" +
+                "(SELECT ao.provinceCity FROM AddressOrder ao WHERE ao.id = :addressOrderId)))";
+        try {
+            Double price = em.createQuery(sql, Double.class)
+                    .setParameter("addressOrderId", addressOrderId)
+                    .setMaxResults(1)
+                    .getSingleResult();
+            return BigDecimal.valueOf(price);
+        } catch (Exception e) {
+            System.err.println("[SHIPPING_FEE] Không tìm thấy phí ship khớp cho addressOrderId="
+                    + addressOrderId + ". Lỗi: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            return new java.math.BigDecimal("30000.00");
+        }
+    }
 
     @Transactional
     @Override
@@ -386,14 +443,14 @@ public class OrderRepositoryImpl implements IOrderRepository {
                 SELECT new com.example.pkcn.dto.response.OrderDetailsHistoryDTO(
                 od.id,
                 o.id,
-                od.price,
-                od.productVariantId,
+                od.priceTotal,
+                od.productVariant.id,
                 od.quantity,
                 pv.name,
                 COALESCE(pi.urlImage, ''))
                 FROM OrderDetail od
                 JOIN od.order o
-                LEFT JOIN ProductVariant pv ON pv.id = od.productVariantId
+                LEFT JOIN od.productVariant pv
                 LEFT JOIN pv.productImage pi
                 WHERE o.id = :orderId
                 AND o.user.id = :userId

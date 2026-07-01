@@ -1,17 +1,20 @@
 package com.example.pkcn.controller.order;
 
+import com.example.pkcn.dto.request.OrderRequestDTO;
 import com.example.pkcn.dto.response.OrderDetailsHistoryDTO;
 import com.example.pkcn.dto.response.OrderHistoryDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
 import com.example.pkcn.entity.User;
 import com.example.pkcn.repository.user.user_detail_repo.IUserRepository;
 import com.example.pkcn.service.order.IOrderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/orders")
@@ -39,5 +42,28 @@ public class OrderController {
         User user = userRepository.findUserByEmail(userDetails.getUsername());
         List<OrderDetailsHistoryDTO> details = orderService.getOrderDetails(orderId, user.getId());
         return ResponseEntity.ok(details);
+    }
+    @PostMapping
+    public ResponseEntity<?> createOrder(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody OrderRequestDTO requestDTO
+    ) {
+        try {
+            User user = userRepository.findUserByEmail(userDetails.getUsername());
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("success", false, "message", "Tài khoản không tồn tại hoặc phiên đăng nhập hết hạn!"));
+            }
+
+            orderService.createOrder(user.getId(), requestDTO);
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Đặt hàng thành công!"
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
     }
 }

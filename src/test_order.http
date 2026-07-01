@@ -1,0 +1,33 @@
+### 1. Gọi API Đăng nhập để lấy Token tự động
+POST http://localhost:8080/api/v1/auth/login-local
+Content-Type: application/json
+
+{
+  "email": "23130333@st.hcmuaf.edu.vn",
+  "password": "123456@Cr7"
+}
+
+> {%
+    // Đoạn code này giúp IntelliJ tự động lưu Token lại sau khi đăng nhập thành công
+    client.global.set("auth_token", response.body.token);
+%}
+
+### =======================================================
+
+### 2. Gọi API Đặt hàng (Tự động truyền Token lấy từ bước 1)
+POST http://localhost:8080/api/v1/orders
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "addressOrderId": 2,
+  "paymentMethodId": "COD",
+  "note": "Giao giờ hành chính",
+  "appliedVouchers": ["FREESHIP"],
+  "products": [
+    {
+      "productVariantId": 193,
+      "quantity": 1
+    }
+  ]
+}
