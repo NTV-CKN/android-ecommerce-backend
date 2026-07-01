@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/cart/**").authenticated()
                         .requestMatchers("/api/v1/ship-fee-address/**", "/").permitAll()
                         .requestMatchers("/api/v1/admin-product/**", "/").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/admin-voucher/**", "/").hasRole("ADMIN")
                         .requestMatchers("/api/v1/orders/**").authenticated()
                         .anyRequest().authenticated()
                 ).sessionManagement(
