@@ -50,7 +50,7 @@ public class Order {
     protected void onCreate() {
         this.orderDate = LocalDateTime.now();
         if (this.statusOrder == null) {
-            this.statusOrder = "pending";
+            this.statusOrder = "pending_approve";
         }
         if (this.shippingFee == null) {
             this.shippingFee = BigDecimal.ZERO;

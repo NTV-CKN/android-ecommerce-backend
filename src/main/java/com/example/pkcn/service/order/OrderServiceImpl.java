@@ -106,9 +106,6 @@ public class OrderServiceImpl implements IOrderService {
     @Transactional
     public void createOrder(Integer userId, OrderRequestDTO requestDTO) {
         User user = em.find(User.class, userId);
-        // Lưu ý: requestDTO.getAddressOrderId() là ID lấy từ bảng user_address (sổ địa chỉ của user),
-        // KHÔNG phải ID có sẵn trong bảng address_order. address_order chỉ dùng để lưu snapshot
-        // địa chỉ tại thời điểm đặt hàng, nên phải tạo mới 1 dòng ở đây, không được em.find() thẳng.
         UserAddress userAddress = em.find(UserAddress.class, requestDTO.getAddressOrderId());
         if (user == null || userAddress == null) {
             throw new RuntimeException("Thông tin tài khoản hoặc địa chỉ nhận hàng không tồn tại!");
