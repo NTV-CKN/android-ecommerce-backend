@@ -13,4 +13,5 @@ public interface IUserAddressService {
     List<UserAddressDTO> getUserAddressListByUserId(Integer userId);
     SuccessBasicDTO addUserAddress(String email, AddUserAddressDTO addUserAddressDTO) throws Exception;
     SuccessBasicDTO updateUserAddress(String email, UpdateUserAddressDTO updateUserAddressDTO) throws Exception;
+    SuccessBasicDTO removeUserAddress(UserAddressDTO userAddressDTO, String email) throws UserNotExistException;
 }

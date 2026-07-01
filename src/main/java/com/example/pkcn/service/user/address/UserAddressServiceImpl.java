@@ -1,5 +1,6 @@
 package com.example.pkcn.service.user.address;
 
+import com.example.pkcn.controller.advice.cus_exception.DataNotFoundException;
 import com.example.pkcn.controller.advice.cus_exception.UserNotExistException;
 import com.example.pkcn.dto.request.AddUserAddressDTO;
 import com.example.pkcn.dto.request.UpdateUserAddressDTO;
@@ -108,6 +109,41 @@ public class UserAddressServiceImpl implements IUserAddressService {
 
         return new SuccessBasicDTO(
                 "Cập nhật thành công",
+                true
+        );
+    }
+
+    @Transactional
+    @Override
+    public SuccessBasicDTO removeUserAddress(UserAddressDTO userAddressDTO, String email) throws UserNotExistException {
+        User user = userAddressRepository.getUserByEmailAndFetchAddresses(email);
+        if(user == null)
+            throw new UserNotExistException("Người dùng không tồn tại");
+
+        UserAddress userAddressRemove = null;
+        for(UserAddress userAddress: user.getUserAddresses()) {
+            if(userAddress.getDefault() && Objects.equals(userAddress.getId(), userAddressDTO.getId())) {
+                throw new IllegalArgumentException(
+                        "Không thể xóa địa chỉ mặc định"
+                );
+            }
+
+            if(Objects.equals(userAddress.getId(), userAddressDTO.getId())) {
+                userAddressRemove=userAddress;
+                break;
+            }
+        }
+
+        if(userAddressRemove == null)
+            throw new DataNotFoundException(
+                    "Không tìm thấy địa chỉ phù hợp để xóa"
+            );
+
+        userAddressRemove.setUser(null);
+        user.getUserAddresses().remove(userAddressRemove);
+
+        return new SuccessBasicDTO(
+                "Xóa địa chỉ thành công",
                 true
         );
     }
