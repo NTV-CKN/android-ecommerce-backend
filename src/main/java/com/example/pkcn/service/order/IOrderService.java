@@ -1,5 +1,6 @@
 package com.example.pkcn.service.order;
 
+import com.example.pkcn.dto.request.OrderRequestDTO;
 import com.example.pkcn.dto.response.OrderDetailsHistoryDTO;
 import com.example.pkcn.dto.response.OrderDetailAdminDTO;
 import com.example.pkcn.dto.response.OrderHistoryDTO;
@@ -44,4 +45,5 @@ public interface IOrderService {
     OrderDetailAdminDTO getOrderDetailById(
             Integer orderId
     );
+    void createOrder(Integer userId, OrderRequestDTO requestDTO);
 }
