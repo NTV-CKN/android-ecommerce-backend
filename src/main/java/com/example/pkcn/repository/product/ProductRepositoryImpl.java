@@ -32,7 +32,7 @@ public class ProductRepositoryImpl implements IProductRepository {
                 "LEFT JOIN p.reviews r " +
                 "LEFT JOIN p.category c " +
                 "WHERE p.status = 1 " +
-                "AND (:categoryId IS NULL OR c.id = :categoryId) " +
+                "AND (:categoryId IS NULL OR c.id = :categoryId OR c.parentCategories.id = :categoryId) " +
                 "AND (pi IS NULL OR (pi.isMain = true AND pi.productVariant IS NULL)) " +
                 "AND (r IS NULL OR r.status = 'ACTIVE') " +
                 "GROUP BY p.id, p.name, p.subtitle, p.minPrice " +
