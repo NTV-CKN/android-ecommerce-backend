@@ -130,4 +130,56 @@ public class Voucher {
     public VoucherType getVoucherType() {
         return voucherType;
     }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDiscountType(DiscountType discountType) {
+        this.discountType = discountType;
+    }
+
+    public void setDiscountValue(BigDecimal discountValue) {
+        this.discountValue = discountValue;
+    }
+
+    public void setMinPriceAllow(BigDecimal minPriceAllow) {
+        this.minPriceAllow = minPriceAllow;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setUsageLimit(Integer usageLimit) {
+        this.usageLimit = usageLimit;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setVoucherType(VoucherType voucherType) {
+        this.voucherType = voucherType;
+    }
 }
