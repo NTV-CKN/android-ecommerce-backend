@@ -21,4 +21,16 @@ public interface IProductAdminRepository {
     void saveProductImages(List<ProductImage> images);
 
     void saveProductCategory(ProductCategory category);
+
+    Product findProductById(Integer id);
+
+    void deleteProductCategoriesByProductId(Integer id);
+
+    void deleteMainImageByProductId(Integer id);
+
+    void deleteSubImagesByProductId(Integer id);
+
+    ProductVariant findVariantBySkuAndProductId(String sku, Integer id);
+
+    void deleteImageByVariantId(Integer id);
 }

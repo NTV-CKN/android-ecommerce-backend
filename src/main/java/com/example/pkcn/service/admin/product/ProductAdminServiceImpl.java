@@ -86,14 +86,26 @@ public class ProductAdminServiceImpl implements IProductAdminService {
 
         return finalSku;
     }
-
     @Transactional
     @Override
     public SuccessBasicDTO saveProduct(ProductAdminPageDTO dto) {
-        Product product = new Product();
-        product.setCreateDate(LocalDateTime.now());
-        product.setUpdateDate(LocalDateTime.now());
-        product.setFeatured(false);
+        Product product;
+        boolean isUpdate = dto.getId() != null && dto.getId() > 0;
+
+        if (isUpdate) {
+            product = productAdminRepository.findProductById(dto.getId());
+            if (product == null) {
+                return new SuccessBasicDTO("Không tìm thấy sản phẩm có ID: " + dto.getId(), false);
+            }
+            product.setUpdateDate(LocalDateTime.now());
+
+            productAdminRepository.deleteProductCategoriesByProductId(product.getId());
+        } else {
+            product = new Product();
+            product.setCreateDate(LocalDateTime.now());
+            product.setUpdateDate(LocalDateTime.now());
+            product.setFeatured(false);
+        }
 
         product.setFolderId(dto.getFolderId());
         product.setName(dto.getName());
@@ -121,14 +133,18 @@ public class ProductAdminServiceImpl implements IProductAdminService {
         product.setMinPrice(minPrice != null ? minPrice : BigDecimal.ZERO);
         product.setMaxPrice(maxPrice != null ? maxPrice : BigDecimal.ZERO);
 
-        if(Objects.equals(product.getMinPrice(), product.getMaxPrice()))
+        if (Objects.equals(product.getMinPrice(), product.getMaxPrice())) {
             product.setMaxPrice(null);
+        }
 
         final Product savedProduct = productAdminRepository.saveProduct(product);
 
         List<ProductImage> productImages = new ArrayList<>();
 
         if (dto.getMainImage() != null && !dto.getMainImage().trim().isEmpty()) {
+            if (isUpdate) {
+                productAdminRepository.deleteMainImageByProductId(savedProduct.getId());
+            }
             ProductImage mainImg = new ProductImage();
             mainImg.setUrlImage(dto.getMainImage());
             mainImg.setIsMain(true);
@@ -136,7 +152,10 @@ public class ProductAdminServiceImpl implements IProductAdminService {
             productImages.add(mainImg);
         }
 
-        if (dto.getImages() != null) {
+        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
+            if (isUpdate) {
+                productAdminRepository.deleteSubImagesByProductId(savedProduct.getId());
+            }
             for (String subImageUrl : dto.getImages()) {
                 if (subImageUrl != null && !subImageUrl.trim().isEmpty()) {
                     ProductImage subImg = new ProductImage();
@@ -150,7 +169,25 @@ public class ProductAdminServiceImpl implements IProductAdminService {
 
         if (dto.getProductVariantDTOS() != null) {
             for (ProductVariantDTO vDto : dto.getProductVariantDTOS()) {
-                ProductVariant variant = new ProductVariant();
+                ProductVariant variant;
+                boolean isVariantUpdate = false;
+
+                if (isUpdate && vDto.getSku() != null) {
+                    variant = productAdminRepository.findVariantBySkuAndProductId(vDto.getSku(), savedProduct.getId());
+                    if (variant != null) {
+                        isVariantUpdate = true;
+                        variant.setUpdateDate(LocalDateTime.now());
+                    } else {
+                        variant = new ProductVariant();
+                        variant.setCreateDate(LocalDateTime.now());
+                        variant.setUpdateDate(LocalDateTime.now());
+                    }
+                } else {
+                    variant = new ProductVariant();
+                    variant.setCreateDate(LocalDateTime.now());
+                    variant.setUpdateDate(LocalDateTime.now());
+                }
+
                 variant.setSku(vDto.getSku());
                 variant.setName(vDto.getName());
                 variant.setPrice(vDto.getPrice());
@@ -159,12 +196,14 @@ public class ProductAdminServiceImpl implements IProductAdminService {
                 variant.setSize(vDto.getSize());
                 variant.setGram(vDto.getGram());
                 variant.setProduct(savedProduct);
-                variant.setCreateDate(LocalDateTime.now());
-                variant.setUpdateDate(LocalDateTime.now());
 
                 ProductVariant savedVariant = productAdminRepository.saveProductVariant(variant);
 
                 if (vDto.getImageUrl() != null && !vDto.getImageUrl().trim().isEmpty()) {
+                    if (isVariantUpdate) {
+                        productAdminRepository.deleteImageByVariantId(savedVariant.getId());
+                    }
+
                     ProductImage variantImg = new ProductImage();
                     variantImg.setUrlImage(vDto.getImageUrl());
                     variantImg.setIsMain(false);
@@ -182,18 +221,18 @@ public class ProductAdminServiceImpl implements IProductAdminService {
         if (dto.getCategoriesDTOS() != null) {
             for (CategoriesDTO catDto : dto.getCategoriesDTOS()) {
                 Categories category = categoriesRepository.findById(catDto.getId());
-
-                ProductCategory productCategory = new ProductCategory(savedProduct, category);
-                productAdminRepository.saveProductCategory(productCategory);
+                if (category != null) {
+                    ProductCategory productCategory = new ProductCategory(savedProduct, category);
+                    productAdminRepository.saveProductCategory(productCategory);
+                }
             }
         }
 
         return new SuccessBasicDTO(
-                "Lưu thành công",
+                isUpdate ? "Cập nhật sản phẩm thành công" : "Lưu thành công",
                 true
         );
     }
-
     private String convertToRawCode(String input) {
         if (input == null || input.trim().isEmpty()) return "X";
         String normalized = Normalizer.normalize(input, Normalizer.Form.NFD)
