@@ -30,7 +30,7 @@ public class ProductSearchTool implements Function<ProductSearchRequest, Product
         );
 
         if (request.keyword() != null && !request.keyword().isBlank()) {
-            jpql.append("AND (LOWER(p.name) LIKE LOWER(:keyword) OR LOWER(p.description) LIKE LOWER(:keyword)) ");
+            jpql.append("AND LOWER(p.name) LIKE LOWER(:keyword) ");
         }
 
         if (request.maxPrice() != null) {
