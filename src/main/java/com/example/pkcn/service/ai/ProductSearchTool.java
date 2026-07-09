@@ -3,6 +3,7 @@ package com.example.pkcn.service.ai;
 import com.example.pkcn.dto.request.ai.ProductSearchRequest;
 import com.example.pkcn.dto.response.ai.ProductChatSummaryDTO;
 import com.example.pkcn.dto.response.ai.ProductSearchResponse;
+import com.example.pkcn.utils.TempChatContext;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,7 @@ public class ProductSearchTool implements Function<ProductSearchRequest, Product
             ));
         }
 
+        TempChatContext.setProducts(dtoList);
         return new ProductSearchResponse(dtoList);
     }
 }
