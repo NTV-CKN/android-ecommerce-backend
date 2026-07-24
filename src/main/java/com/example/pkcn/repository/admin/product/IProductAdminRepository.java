@@ -32,5 +32,9 @@ public interface IProductAdminRepository {
 
     ProductVariant findVariantBySkuAndProductId(String sku, Integer id);
 
+    ProductVariant findVariantBySku(String sku);
+
     void deleteImageByVariantId(Integer id);
+
+    void deleteVariant(ProductVariant variantToDelete);
 }

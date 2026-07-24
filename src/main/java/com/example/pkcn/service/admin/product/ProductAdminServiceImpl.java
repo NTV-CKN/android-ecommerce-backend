@@ -21,8 +21,8 @@ import java.util.Objects;
 
 @Service
 public class ProductAdminServiceImpl implements IProductAdminService {
-    private IProductAdminRepository productAdminRepository;
-    private ICategoriesRepository categoriesRepository;
+    private final IProductAdminRepository productAdminRepository;
+    private final ICategoriesRepository categoriesRepository;
 
     @Autowired
     public ProductAdminServiceImpl(
@@ -86,6 +86,7 @@ public class ProductAdminServiceImpl implements IProductAdminService {
 
         return finalSku;
     }
+
     @Transactional
     @Override
     public SuccessBasicDTO saveProduct(ProductAdminPageDTO dto) {
@@ -233,6 +234,59 @@ public class ProductAdminServiceImpl implements IProductAdminService {
                 true
         );
     }
+
+    @Transactional
+    @Override
+    public SuccessBasicDTO removeVariant(ProductVariantDTO productVariantDTO) {
+        ProductVariant variantToDelete = productAdminRepository.findVariantBySku(productVariantDTO.getSku());
+        Product product = variantToDelete.getProduct();
+
+        if (product != null) {
+            product.getVariants().removeIf(var -> var.getId().equals(productVariantDTO.getId()));
+
+            int totalStock = 0;
+            BigDecimal minPrice = null;
+            BigDecimal maxPrice = null;
+
+            for (ProductVariant var : product.getVariants()) {
+                totalStock += (var.getStock() != null) ? var.getStock() : 0;
+                BigDecimal price = var.getPrice();
+
+                if (price != null) {
+                    if (minPrice == null || price.compareTo(minPrice) < 0) minPrice = price;
+                    if (maxPrice == null || price.compareTo(maxPrice) > 0) maxPrice = price;
+                }
+            }
+
+            product.setStock(totalStock);
+            product.setMinPrice(minPrice != null ? minPrice : BigDecimal.ZERO);
+            product.setMaxPrice(maxPrice != null ? maxPrice : BigDecimal.ZERO);
+
+            if (Objects.equals(product.getMinPrice(), product.getMaxPrice())) {
+                product.setMaxPrice(null);
+            }
+
+            product.setUpdateDate(LocalDateTime.now());
+
+            productAdminRepository.saveProduct(product);
+        }
+
+        ProductImage productImage = variantToDelete.getProductImage();
+        if (productImage != null) {
+//            variantToDelete.setProductImage(null);
+//            productImage.setProductVariant(null);
+            productAdminRepository.deleteImageByVariantId(variantToDelete.getId());
+        }
+
+        productAdminRepository.deleteVariant(variantToDelete);
+
+        return new SuccessBasicDTO(
+                "Xóa biến thành công!",
+                true
+        );
+    }
+
+
     private String convertToRawCode(String input) {
         if (input == null || input.trim().isEmpty()) return "X";
         String normalized = Normalizer.normalize(input, Normalizer.Form.NFD)

@@ -140,9 +140,22 @@ public class ProductAdminRepositoryImpl implements IProductAdminRepository{
         }
     }
 
+    @Override
+    public ProductVariant findVariantBySku(String sku) {
+        return em.createQuery("FROM ProductVariant pv WHERE pv.sku = :sku", ProductVariant.class)
+                .setParameter("sku", sku)
+                .getSingleResult();
+    }
+
     public void deleteImageByVariantId(Integer variantId) {
         em.createQuery("DELETE FROM ProductImage pi WHERE pi.productVariant.id = :variantId")
                 .setParameter("variantId", variantId).executeUpdate();
+    }
+
+    @Override
+    public void deleteVariant(ProductVariant variantToDelete) {
+        em.createQuery("DELETE FROM ProductVariant pv WHERE pv.id = :variantId")
+                .setParameter("variantId", variantToDelete.getId()).executeUpdate();
     }
 
     public void deleteProductCategoriesByProductId(Integer productId) {

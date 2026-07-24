@@ -2,6 +2,7 @@ package com.example.pkcn.controller.admin;
 
 import com.example.pkcn.dto.ProductAdminPageDTO;
 import com.example.pkcn.dto.response.PageResponseDTO;
+import com.example.pkcn.dto.response.ProductVariantDTO;
 import com.example.pkcn.dto.response.SuccessBasicDTO;
 import com.example.pkcn.entity.Product;
 import com.example.pkcn.service.admin.product.IProductAdminService;
@@ -51,5 +52,10 @@ public class ProductManageAdminController {
     @PostMapping("/add-product")
     public SuccessBasicDTO addProduct(@RequestBody ProductAdminPageDTO productAdminPageDTO) {
         return productAdminService.saveProduct(productAdminPageDTO);
+    }
+
+    @PostMapping("/remove-variant")
+    public SuccessBasicDTO addProduct(@RequestBody ProductVariantDTO productVariantDTO) {
+        return productAdminService.removeVariant(productVariantDTO);
     }
 }
