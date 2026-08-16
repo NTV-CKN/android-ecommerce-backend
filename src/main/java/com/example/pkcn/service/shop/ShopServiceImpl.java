@@ -8,10 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import java.util.function.Function;
+
 @Service
 @Primary
-public class ShopServiceImpl implements IShopService {
+public class ShopServiceImpl implements IShopService, Function<ShopServiceImpl.EmptyRequest, ShopInfoDTO> {
     private final IShopRepository shopRepository;
+
+    public record EmptyRequest() {}
 
     @Autowired
     public ShopServiceImpl(IShopRepository shopRepository) {
@@ -26,6 +30,14 @@ public class ShopServiceImpl implements IShopService {
 
         ShopInfoDTO shopInfoDTO = new ShopInfoDTO();
         shopInfoDTO.initData(shopInfo);
+
+        return shopInfoDTO;
+    }
+
+    @Override
+    public ShopInfoDTO apply(EmptyRequest emptyRequest) {
+        ShopInfoDTO shopInfoDTO = new ShopInfoDTO();
+        shopInfoDTO.initData(shopRepository.getShopInfo());
 
         return shopInfoDTO;
     }
