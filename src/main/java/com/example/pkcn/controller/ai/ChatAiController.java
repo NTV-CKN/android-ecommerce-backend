@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/ai")
@@ -34,10 +36,16 @@ public class ChatAiController {
                 "gọi công cụ 'productSearchFunction' để lấy dữ liệu thực tế và tư vấn dựa trên danh sách đó. " +
                 "QUAN TRỌNG: Khi gọi công cụ, CHỈ điền các tham số mà khách hàng đã thực sự đề cập trong câu hỏi. " +
                 "TUYỆT ĐỐI KHÔNG tự suy đoán, không đặt giá trị mặc định, không bịa ra giá tiền hay màu sắc " +
-                "nếu khách hàng không nói rõ. Nếu khách hàng không đề cập giá hoặc màu, hãy để trống các trường đó.";
+                "nếu khách hàng không nói rõ. Nếu khách hàng không đề cập giá hoặc màu, hãy để trống các trường đó. " +
+                "Trong trường hợp khách có hỏi kèm hoặc hỏi về thông tin của cửa hàng, bạn PHẢI gọi công cụ 'getShopInfoFunction' " +
+                "dựa vào kết quả để trả lời những gì mà họ muốn và không được bịa ra thông tin không có.";
+
+        Set<String> functions = new HashSet<>();
+        functions.add("productSearchFunction");
+        functions.add("getShopInfoFunction");
 
         GoogleGenAiChatOptions options = GoogleGenAiChatOptions.builder()
-                .toolName("productSearchFunction")
+                .toolNames(functions)
                 .build();
 
         String fullPrompt = systemInstruction + "\n\nCâu hỏi của khách hàng: " + userMessage;
